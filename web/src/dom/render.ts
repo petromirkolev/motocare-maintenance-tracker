@@ -41,8 +41,7 @@ export const render = {
     showScreen('bikeAdd');
   },
 
-  eEditBikeScreen(): void {
-    dom.garageScreen?.classList.add('is-hidden');
-    dom.bikeScreen?.classList.remove('is-hidden');
+  editBikeScreen(): void {
+    showScreen('bikeEdit');
   },
 };

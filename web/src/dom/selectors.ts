@@ -30,7 +30,7 @@ export const dom = {
   garageScreen: document.querySelector('[data-testid="screen-garage"]'),
   bikeScreen: document.querySelector('[data-testid="screen-bike"]'),
   addBikeScreen: document.querySelector('[data-testid="screen-bike-add"]'),
-  // editBikeScreen: document.querySelector('[data-testid="screen-bike-add"]'),
+  editBikeScreen: document.querySelector('[data-testid="screen-bike-edit"]'),
 
   // bikes grid
   bikeGrid: document.querySelector('[data-testid="garage-grid"]'),
@@ -42,4 +42,12 @@ export const dom = {
   model: document.querySelector('#addBikeModel'),
   year: document.querySelector('#addBikeYear'),
   odo: document.querySelector('#addBikeOdo'),
+
+  // edit bike form
+  editBikeForm: document.querySelector('[data-testid="edit-bike-form"]'),
+  editBikeId: document.querySelector<HTMLInputElement>('#editBikeId'),
+  editMake: document.querySelector<HTMLInputElement>('#editBikeName'),
+  editYear: document.querySelector<HTMLInputElement>('#editBikeYear'),
+  editModel: document.querySelector<HTMLInputElement>('#editBikeModel'),
+  editOdo: document.querySelector<HTMLInputElement>('#editBikeOdo'),
 };

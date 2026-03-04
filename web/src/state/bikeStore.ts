@@ -33,7 +33,7 @@ function notify() {
   listeners.forEach((fn) => fn());
 }
 
-export function readBikeForm(form: HTMLFormElement): BikeInput {
+export function readBikeForm(form: HTMLFormElement) {
   const fd = new FormData(form);
 
   const make = String(fd.get('make') ?? '').trim();

@@ -32,6 +32,7 @@ function bindEvents(): void {
       case 'nav.garage':
         render.garageScreen();
         break;
+
       case 'nav.register':
         render.registerScreen();
         break;
@@ -53,11 +54,56 @@ function bindEvents(): void {
         render.garageScreen();
         break;
       }
+
       case 'bike.delete':
-        const id = target.closest<HTMLElement>('[data-action]')?.dataset.bikeId;
-        bikeStore.deleteBike(id!);
+        const DELETE_ID =
+          target.closest<HTMLElement>('[data-action]')?.dataset.bikeId;
+        bikeStore.deleteBike(DELETE_ID!);
         render.garageScreen();
         break;
+
+      case 'bike.edit.open':
+        render.editBikeScreen();
+
+        const id = target.closest<HTMLElement>('[data-action]')?.dataset.bikeId;
+        if (!id) break;
+
+        const foundBike = bikeStore.getBike(id);
+        if (!foundBike) break;
+
+        const editMake = dom.editMake;
+        const editYear = dom.editYear;
+        const editModel = dom.editModel;
+        const editOdo = dom.editOdo;
+        const editId = dom.editBikeId;
+
+        if (!editMake || !editYear || !editModel || !editOdo || !editId) {
+          throw new Error('Edit form inputs missing from DOM');
+        }
+
+        editId.value = id;
+
+        editMake.value = foundBike.make;
+        editYear.value = String(foundBike.year);
+        editModel.value = foundBike.model;
+        editOdo.value = String(foundBike.odo);
+
+        break;
+
+      case 'bike.edit.submit': {
+        const editForm = dom.editBikeForm as HTMLFormElement | null;
+        if (!editForm) throw new Error('Missing edit bike form');
+
+        const idInput = dom.editBikeId as HTMLInputElement | null;
+        const id = idInput?.value?.trim();
+        if (!id) throw new Error('Missing bike id for edit submit');
+
+        const form = readBikeForm(editForm);
+        bikeStore.updateBike(id, form);
+        editForm.reset();
+        render.garageScreen();
+        break;
+      }
     }
   });
 }
