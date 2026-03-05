@@ -89,7 +89,7 @@ export const bikeStore = {
     return bike;
   },
 
-  deleteBike(id: string) {
+  deleteBike(id: string | undefined) {
     state = { ...state, bikes: state.bikes.filter((b) => b.id !== id) };
     notify();
   },

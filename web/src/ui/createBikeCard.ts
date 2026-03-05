@@ -1,4 +1,4 @@
-import type { Bike } from '../state/bikeStore';
+import type { Bike } from '../types/bikes';
 
 export function createBikeCard(bike: Bike): HTMLElement {
   const id = String(bike.id);
@@ -9,7 +9,7 @@ export function createBikeCard(bike: Bike): HTMLElement {
   article.setAttribute('data-testid', `bike-card-${id}`);
 
   article.innerHTML = `
-    <button class="bikeCard__main" type="button" data-action="bike.open" data-testid="bike-open-${id}">
+    <button class="bikeCard__main" type="button" data-bike-id="${id}" data-action="bike.open" data-testid="bike-open-${id}">
       <div class="bikeCard__name" data-testid="bike-name-${id}"></div>
       <div class="bikeCard__meta" data-testid="bike-meta-${id}"></div>
       <div class="bikeCard__odo">

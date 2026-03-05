@@ -13,16 +13,6 @@ export const dom = {
   regPassInput2: document.querySelector('[data-testid="register-password2"]'),
   registerFormBtn: document.querySelector('[data-testid="btn-register-form"]'),
 
-  // buttons
-  loginBtn: document.querySelector('[data-testid="btn-login"]'),
-  registerBtn: document.querySelector('[data-testid="btn-register"]'),
-  registerBackBtn: document.querySelector('[data-testid="btn-register-back"]'),
-  bikeBtn: document.querySelectorAll('.bikeCard__main'),
-  backToGarageBtn: document.querySelector('[data-testid="btn-back-to-garage"]'),
-  deleteBikeBtn: document.querySelectorAll('.iconbtn--danger'),
-  editBikeBtn: document.querySelectorAll('.iconbtn--edit'),
-  addBikeBtn: document.querySelector('[data-testid="btn-add-bike"]'),
-
   // screens
   nav: document.querySelector('[data-testid="topbar"]'),
   loginScreen: document.querySelector('[data-testid="screen-login"]'),
@@ -50,4 +40,10 @@ export const dom = {
   editYear: document.querySelector<HTMLInputElement>('#editBikeYear'),
   editModel: document.querySelector<HTMLInputElement>('#editBikeModel'),
   editOdo: document.querySelector<HTMLInputElement>('#editBikeOdo'),
+
+  // maintenance form
+  bikeName: document.querySelector('[data-testid="bike-name"]'),
+  bikeModel: document.querySelector('[data-testid="bike-model"]'),
+  bikeOdo: document.querySelector('[data-testid="bike-odometer"]'),
+  bikeEdit: document.querySelector('[data-testid="btn-edit-bike"]'),
 };

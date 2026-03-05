@@ -3,6 +3,9 @@ import { dom } from '../dom/selectors';
 import { bikeStore, readBikeForm } from '../state/bikeStore';
 import { showScreen } from './showScreen';
 
+let foundId: any = '';
+let foundBike: any = '';
+
 type Action =
   | 'auth.login'
   | 'auth.logout'
@@ -57,19 +60,18 @@ function bindEvents(): void {
       }
 
       case 'bike.delete':
-        const DELETE_ID =
-          target.closest<HTMLElement>('[data-action]')?.dataset.bikeId;
-        bikeStore.deleteBike(DELETE_ID!);
+        foundId = target.closest<HTMLElement>('[data-action]')?.dataset.bikeId;
+        bikeStore.deleteBike(foundId);
         render.garageScreen();
         break;
 
       case 'bike.edit.open':
         render.editBikeScreen();
 
-        const id = target.closest<HTMLElement>('[data-action]')?.dataset.bikeId;
-        if (!id) break;
+        foundId = target.closest<HTMLElement>('[data-action]')?.dataset.bikeId;
+        if (!foundId) break;
 
-        const foundBike = bikeStore.getBike(id);
+        foundBike = bikeStore.getBike(foundId);
         if (!foundBike) break;
 
         const editMake = dom.editMake;
@@ -82,7 +84,7 @@ function bindEvents(): void {
           throw new Error('Edit form inputs missing from DOM');
         }
 
-        editId.value = id;
+        editId.value = foundId;
 
         editMake.value = foundBike.make;
         editYear.value = String(foundBike.year);
@@ -108,9 +110,19 @@ function bindEvents(): void {
 
       case 'bike.open':
         showScreen('bike');
+
+        foundId = target.closest<HTMLElement>('[data-action]')?.dataset.bikeId;
+        if (!foundId) break;
+
+        foundBike = bikeStore.getBike(foundId);
+        if (!foundBike) break;
+
+        (dom.bikeName as HTMLElement).innerHTML = foundBike.make;
+        (dom.bikeModel as HTMLElement).innerHTML = foundBike.model;
+        (dom.bikeOdo as HTMLElement).innerHTML = foundBike.odo;
         // set edit and delete buttons daa bike id
         // set make/model/year/odo in html from bike data
-        break;
+        dom.break;
     }
   });
 }
