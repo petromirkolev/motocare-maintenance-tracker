@@ -2,6 +2,7 @@ import { dom } from './selectors';
 import { bikeStore } from '../state/bikeStore';
 import { createBikeCard } from '../ui/createBikeCard';
 import { showScreen } from '../ui/showScreen';
+import { req } from '../utils/domHelper';
 
 export const render = {
   initialScreen(): void {
@@ -14,26 +15,20 @@ export const render = {
 
   garageScreen(): void {
     (dom.bikeGrid as HTMLDivElement).innerHTML = '';
+    const bikes = bikeStore.getBikes();
+
+    req(dom.userEmail, 'userEmail').textContent = 'Hello, {user}!';
+    req(dom.garageCount, 'garageCount').textContent =
+      `${bikes.length} motorcycles`;
 
     showScreen('garage');
 
-    dom.userEmail!.innerHTML = `Hello, Petro!`;
-
-    const bikes = bikeStore.getBikes();
-
-    if (bikes.length >= 0) {
-      (
-        document.querySelector('[data-testid="garage-count"]') as HTMLElement
-      ).textContent = `${bikes.length} motorcycles`;
-      document
-        .querySelector('[data-testid="garage-empty"]')
-        ?.classList.remove('is-hidden');
+    if (bikes.length > 0) {
+      req(dom.garageEmpty, 'garageEmpty').classList.add('is-hidden');
 
       bikes.forEach((bike) => dom.bikeGrid?.appendChild(createBikeCard(bike)));
     } else {
-      document
-        .querySelector('[data-testid="garage-empty"]')
-        ?.classList.add('is-hidden');
+      req(dom.garageEmpty, 'garageEmpty').classList.remove('is-hidden');
     }
   },
 

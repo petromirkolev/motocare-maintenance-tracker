@@ -59,9 +59,12 @@ function bindEvents(): void {
       }
 
       case 'bike.delete':
-        bikeStore.deleteBike(
-          target.closest<HTMLElement>('[data-action]')?.dataset.bikeId,
-        );
+        const el = target.closest<HTMLElement>('[data-action]');
+        const id = el?.dataset.bikeId;
+
+        if (!id) break;
+
+        bikeStore.deleteBike(id);
         render.garageScreen();
         break;
 

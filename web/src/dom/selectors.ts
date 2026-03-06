@@ -1,7 +1,7 @@
 export const dom = {
   // top bar
   logout: document.querySelector('[data-testid="btn-logout"]'),
-  userEmail: document.querySelector('[data-testid="user-email"]'),
+  userEmail: document.querySelector<HTMLElement>('[data-testid="user-email"]'),
 
   // login screen inputs
   emailInput: document.querySelector('[data-testid="login-email"]'),
@@ -21,6 +21,14 @@ export const dom = {
   bikeScreen: document.querySelector('[data-testid="screen-bike"]'),
   addBikeScreen: document.querySelector('[data-testid="screen-bike-add"]'),
   editBikeScreen: document.querySelector('[data-testid="screen-bike-edit"]'),
+
+  // garage screen
+  garageEmpty: document.querySelector<HTMLElement>(
+    '[data-testid="garage-empty"]',
+  ),
+  garageCount: document.querySelector<HTMLElement>(
+    '[data-testid="garage-count"]',
+  ),
 
   // bikes grid
   bikeGrid: document.querySelector('[data-testid="garage-grid"]'),
