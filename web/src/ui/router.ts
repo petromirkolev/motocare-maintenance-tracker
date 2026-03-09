@@ -148,6 +148,9 @@ function bindEvents(): void {
         (dom.bikeOdo as HTMLElement).innerHTML = String(
           appState.selectedBikeFound.odo,
         );
+
+        maintenanceStore.updateTaskInfo(appState.selectedBikeId);
+
         break;
       }
 

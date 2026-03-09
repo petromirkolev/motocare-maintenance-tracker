@@ -81,7 +81,34 @@ export const maintenanceStore = {
     }));
   },
 
-  updateTaskInfo() {},
+  updateTaskInfo(bikeId: string) {
+    document.querySelectorAll('.mcard').forEach((cardEl) => {
+      const card = cardEl as HTMLElement;
+
+      const taskName = card.dataset.name;
+      if (!taskName) return;
+
+      const lastVal = card.querySelector<HTMLElement>(
+        '[data-field="last"] .metaVal',
+      );
+      const dueVal = card.querySelector<HTMLElement>(
+        '[data-field="due"] .metaVal',
+      );
+      if (!lastVal || !dueVal) return;
+
+      const task = getMaintenanceTask(bikeId, taskName);
+      if (!task) {
+        lastVal.textContent = 'Never logged';
+        dueVal.textContent = 'Not done yet';
+        return;
+      }
+
+      lastVal.textContent =
+        task.date && task.odo !== null
+          ? `On ${task.date} at ${task.odo} km.`
+          : 'Never logged';
+    });
+  },
 
   updateRecentHistory() {},
 
