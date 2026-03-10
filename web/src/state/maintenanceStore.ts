@@ -53,8 +53,6 @@ export const maintenanceStore = {
       throw new Error('Invalid odometer');
     }
 
-    console.log(input);
-
     const currentMaintenanceItem: Maintenance = {
       id: newId(),
       bikeId: selectedBike?.id,
@@ -108,33 +106,50 @@ export const maintenanceStore = {
       const dueVal = card.querySelector<HTMLElement>(
         '[data-field="due"] .metaVal',
       );
+
       if (!lastVal || !dueVal) return;
 
       const task = getMaintenanceTask(bikeId, taskName);
+
       if (!task) {
         lastVal.textContent = 'Never logged';
         dueVal.textContent = 'Not scheduled yet';
         return;
       }
 
-      console.log(task);
-
-      lastVal.textContent =
-        task.date && task.odo !== null
-          ? `On ${task.date} at ${task.odo} km.`
-          : 'Never logged';
-
-      if (!task.date) {
-        throw new Error('Missing lastDate');
+      if (task.date && task.odo !== null) {
+        lastVal.textContent = `On ${task.date} at ${task.odo} km.`;
+      } else {
+        lastVal.textContent = 'Never logged';
       }
 
-      const nextDate = new Date(task.date);
-      nextDate.setDate(nextDate.getDate() + Number(task.intervalDays));
+      if (!task.date || task.odo === null) {
+        if (task.intervalDays && task.intervalKm) {
+          dueVal.textContent = `Every ${task.intervalDays} days or ${task.intervalKm} km.`;
+        } else if (task.intervalDays) {
+          dueVal.textContent = `Every ${task.intervalDays} days.`;
+        } else if (task.intervalKm) {
+          dueVal.textContent = `Every ${task.intervalKm} km.`;
+        } else {
+          dueVal.textContent = 'Not done yet';
+        }
+        return;
+      }
+
+      const dueParts: string[] = [];
+
+      if (task.intervalDays) {
+        const nextDate = new Date(task.date);
+        nextDate.setDate(nextDate.getDate() + Number(task.intervalDays));
+        dueParts.push(`On ${nextDate.toISOString().slice(0, 10)}`);
+      }
+
+      if (task.intervalKm) {
+        dueParts.push(`at ${Number(task.intervalKm) + Number(task.odo)} km`);
+      }
 
       dueVal.textContent =
-        task.intervalDays && task.intervalKm !== null
-          ? `On ${nextDate.toISOString().slice(0, 10)} or at ${Number(task.intervalKm) + Number(task.odo)} km.`
-          : 'Not done yet';
+        dueParts.length > 0 ? dueParts.join(' or ') + '.' : 'Not done yet';
     });
   },
 
@@ -154,7 +169,7 @@ export const maintenanceStore = {
     );
 
     const totalDueItems = items.maintenance.filter((item) =>
-      checkDueStatus(item, selectedBike),
+      checkDueStatus(item, selectedBike, today),
     );
 
     const totalOverdueItems = items.maintenance.filter((item) =>
@@ -189,16 +204,34 @@ export const maintenanceStore = {
   },
 
   scheduleTask(
-    id: string,
+    bikeId: string,
     currentTask: string,
     patch: Partial<
       Omit<Maintenance, 'id' | 'bikeId' | 'name' | 'odo' | 'date'>
     >,
   ) {
-    const current = getState().maintenance.find((log) => {
-      return log.bikeId === id && log.name === currentTask;
+    const current = getState().maintenance.find((item) => {
+      return item.bikeId === bikeId && item.name === currentTask;
     });
-    if (!current) throw new Error('Maintenance task not found');
+
+    if (!current) {
+      const created: Maintenance = {
+        id: newId(),
+        bikeId,
+        name: currentTask,
+        date: null,
+        odo: null,
+        intervalKm: patch.intervalKm ?? null,
+        intervalDays: patch.intervalDays ?? null,
+      };
+
+      updateState((prev) => ({
+        ...prev,
+        maintenance: [created, ...prev.maintenance],
+      }));
+
+      return created;
+    }
 
     const next: Maintenance = {
       ...current,
@@ -207,9 +240,37 @@ export const maintenanceStore = {
 
     updateState((prev) => ({
       ...prev,
-      maintenance: prev.maintenance.map((m) =>
-        m.id === current.id ? next : m,
+      maintenance: prev.maintenance.map((item) =>
+        item.id === current.id ? next : item,
       ),
     }));
+
+    return next;
   },
+
+  // scheduleTask(
+  //   id: string,
+  //   currentTask: string,
+  //   patch: Partial<
+  //     Omit<Maintenance, 'id' | 'bikeId' | 'name' | 'odo' | 'date'>
+  //   >,
+  // ) {
+  //   const current = getState().maintenance.find((log) => {
+  //     return log.bikeId === id && log.name === currentTask;
+  //   });
+
+  //   if (!current) throw new Error('Maintenance task not found');
+
+  //   const next: Maintenance = {
+  //     ...current,
+  //     ...patch,
+  //   };
+
+  //   updateState((prev) => ({
+  //     ...prev,
+  //     maintenance: prev.maintenance.map((m) =>
+  //       m.id === current.id ? next : m,
+  //     ),
+  //   }));
+  // },
 };

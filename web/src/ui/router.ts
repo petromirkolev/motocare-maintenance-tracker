@@ -209,7 +209,6 @@ function bindEvents(): void {
         const input = readMaintenanceScheduleForm(form);
 
         const bikeId = appState.selectedBikeId;
-
         if (!bikeId) throw new Error('No bike selected');
 
         const currentTask = appState.currentMaintenanceItem;
