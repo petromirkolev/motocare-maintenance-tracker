@@ -1,5 +1,8 @@
-// Responsibilities:
-// import app
-// import DB init
-// initialize DB first
-// then listen on port
+import app from './app';
+import './db';
+
+const PORT = 3001;
+
+app.listen(PORT, () => {
+  console.log(`API listening on http://localhost:${PORT}`);
+});
