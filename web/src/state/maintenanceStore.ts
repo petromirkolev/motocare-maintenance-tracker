@@ -6,7 +6,8 @@ import { appState } from '../types/state';
 import { checkDueStatus } from '../utils/serviceDueHelper';
 import { checkOverdueStatus } from '../utils/serviceOverdueHelper';
 import { checkServiceItemsStatus } from '../utils/serviceItemsHelper';
-
+import { markOverdueTasks } from '../utils/domHelper';
+//
 export function readMaintenanceLogForm(form: HTMLFormElement) {
   const fd = new FormData(form);
 
@@ -142,7 +143,7 @@ export const maintenanceStore = {
     );
 
     const totalDueItems = items.maintenance.filter((item) =>
-      checkDueStatus(item, today),
+      checkDueStatus(item),
     );
 
     const totalServiceItems = items.maintenance.filter((item) =>
@@ -174,6 +175,9 @@ export const maintenanceStore = {
       totalServiceItems.length - totalOverdueItems.length;
     dom.dueSoon.textContent = totalDueItems.length;
     dom.overdue.textContent = totalOverdueItems.length;
+
+    // Mark overdue tasks
+    markOverdueTasks(totalOverdueItems);
   },
 
   scheduleTask(
