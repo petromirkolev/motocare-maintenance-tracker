@@ -70,4 +70,27 @@ export const db = new sqlite3.Database(DB_PATH, (err) => {
       console.log('Maintenance table is ready');
     },
   );
+
+  db.run(
+    `CREATE TABLE IF NOT EXISTS maintenance_logs (
+      id TEXT PRIMARY KEY,
+      bike_id TEXT NOT NULL,
+      name TEXT NOT NULL,
+      date TEXT NOT NULL,
+      odo INTEGER NOT NULL,
+      created_at TEXT NOT NULL,
+      FOREIGN KEY (bike_id) REFERENCES bikes(id))
+      `,
+    (tableErr) => {
+      if (tableErr) {
+        console.error(
+          'Failed to create maintenance logs table:',
+          tableErr.message,
+        );
+        return;
+      }
+
+      console.log('Maintenance logs table is ready');
+    },
+  );
 });
