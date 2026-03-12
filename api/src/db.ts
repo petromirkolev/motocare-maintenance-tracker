@@ -48,4 +48,26 @@ export const db = new sqlite3.Database(DB_PATH, (err) => {
       console.log('Bikes table is ready');
     },
   );
+
+  db.run(
+    `CREATE TABLE IF NOT EXISTS maintenance (
+      id TEXT PRIMARY KEY,
+      bike_id TEXT NOT NULL,
+      name TEXT NOT NULL,
+      date TEXT,
+      odo INTEGER,
+      interval_km INTEGER,
+      interval_days INTEGER,
+      created_at TEXT NOT NULL,
+      FOREIGN KEY (bike_id) REFERENCES bikes(id))
+      `,
+    (tableErr) => {
+      if (tableErr) {
+        console.error('Failed to create maintenance table:', tableErr.message);
+        return;
+      }
+
+      console.log('Maintenance table is ready');
+    },
+  );
 });
