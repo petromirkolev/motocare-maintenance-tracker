@@ -1,3 +1,5 @@
+/* Auth state is responsible for the app users functions */
+
 import type { AuthUser } from '../types/auth-user';
 
 const AUTH_USER_KEY = 'motocare.auth.user';

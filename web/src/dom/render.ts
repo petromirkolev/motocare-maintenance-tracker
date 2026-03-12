@@ -1,7 +1,4 @@
-/* Functions responsible for rendering the UI based on the current state of the application.
- * These functions manipulate the DOM to display the appropriate screens and content to the user.
- * They are called in response to user interactions and state changes, ensuring that the UI remains up-to-date and reflects the current data and user actions.
- */
+/* Functions responsible for rendering the UI based on the current state of the application. These functions manipulate the DOM to display the appropriate screens and content to the user. */
 
 import { dom } from './selectors';
 import { getState } from '../state/state-storage';

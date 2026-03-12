@@ -1,6 +1,4 @@
-/* Maintenance store manages the maintenance tasks and logs for each bike. It provides functions to add new maintenance logs, update existing ones, and schedule future maintenance tasks. The store also includes logic to calculate due dates and mark tasks as due or overdue based on the last service date and the defined intervals. It interacts with the bike store to ensure that maintenance records are associated with the correct bike.
- * The maintenance store also updates the overall maintenance progress and recent history displayed in the UI, allowing users to easily track the status of their bike's maintenance tasks. It ensures that all maintenance data is consistent and up-to-date, providing a seamless experience for users managing their motorcycle maintenance schedules.
- */
+/* Maintenance store manages the maintenance tasks and logs for each bike. It provides functions to add new maintenance logs, update existing ones, and schedule future maintenance tasks. The store also includes logic to calculate due dates and mark tasks as due or overdue based on the last service date and the defined intervals. It interacts with the bike store to ensure that maintenance records are associated with the correct bike. */
 
 import type {
   Maintenance,

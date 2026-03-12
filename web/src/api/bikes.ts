@@ -1,31 +1,15 @@
 import { getCurrentUser } from '../state/auth-state';
 import { bikeStore } from '../state/bike-store';
-
-export type BikeDto = {
-  id: string;
-  user_id: string;
-  make: string;
-  model: string;
-  year: number;
-  odo: number;
-  created_at: string;
-};
-
-export type ListBikesResponse = {
-  bikes: BikeDto[];
-};
-
-export type CreateBikeResponse = {
-  message: string;
-};
-
-export type ErrorResponse = {
-  error: string;
-};
+import type {
+  Bike,
+  ListBikesResponse,
+  ErrorResponse,
+  CreateBikeResponse,
+} from '../types/bikes';
 
 const API_BASE_URL = 'http://localhost:3001';
 
-export async function fetchBikes(): Promise<BikeDto[]> {
+export async function fetchBikes(): Promise<Bike[]> {
   const currentUser = getCurrentUser();
 
   if (!currentUser) {
