@@ -61,8 +61,12 @@ export function readRegForm(form: HTMLFormElement) {
 
   const password: string = String(fd.get('password') ?? '').trim();
   if (!password) throw new Error('Password is required');
+
   if (password.length < 8)
     throw new Error('Password must be 8 characters at minimum');
+
+  if (password.length > 32)
+    throw new Error('Password must be 32 characters at maximum');
 
   const password2: string = String(fd.get('repeat-password') ?? '').trim();
   if (!password2) throw new Error('Confirm password is required');

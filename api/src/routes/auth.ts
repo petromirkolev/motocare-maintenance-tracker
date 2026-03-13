@@ -41,6 +41,11 @@ authRouter.post('/register', async (req, res) => {
     return;
   }
 
+  if (password.length > 32) {
+    sendAuthError(res, 400, 'Password must be 32 characters at most');
+    return;
+  }
+
   try {
     const existingUser = await findUserByEmail(email);
 
