@@ -2,6 +2,7 @@ import { Page, Locator, expect } from '@playwright/test';
 
 export class RegisterPage {
   readonly page: Page;
+  readonly regScreen: Locator;
   readonly goToRegButton: Locator;
   readonly registerEmail: Locator;
   readonly registerPassword: Locator;
@@ -12,6 +13,7 @@ export class RegisterPage {
 
   constructor(page: Page) {
     this.page = page;
+    this.regScreen = page.getByTestId('screen-register');
     this.goToRegButton = page.getByTestId('btn-register');
     this.registerEmail = page.getByTestId('register-email');
     this.registerPassword = page.getByTestId('register-password');
