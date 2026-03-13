@@ -4,9 +4,10 @@ import {
   invalidEmailInput,
   invalidPasswordInput,
   validInput,
+  uniqueEmail,
 } from '../utils/test-data';
 
-test.describe('Registration page test suite', () => {
+test.describe('Register page test suite', () => {
   let registerPage: RegisterPage;
 
   test.beforeEach(async ({ page }) => {
@@ -15,9 +16,12 @@ test.describe('Registration page test suite', () => {
   });
 
   test('User can register with valid credentials', async () => {
-    await registerPage.fillEmail(validInput.email);
-    await registerPage.fillPassword(validInput.password);
-    await registerPage.fillConfirmPassword(validInput.password);
+    const email = uniqueEmail();
+    const password = validInput.password;
+
+    await registerPage.fillEmail(email);
+    await registerPage.fillPassword(password);
+    await registerPage.fillConfirmPassword(password);
     await registerPage.submit();
     await registerPage.expectSuccess('Registration successful!');
   });
@@ -48,15 +52,19 @@ test.describe('Registration page test suite', () => {
   });
 
   test('User cannot register without email', async () => {
+    const password = validInput.password;
+
     await registerPage.fillEmail('');
-    await registerPage.fillPassword(validInput.password);
-    await registerPage.fillConfirmPassword(validInput.password);
+    await registerPage.fillPassword(password);
+    await registerPage.fillConfirmPassword(password);
     await registerPage.submit();
     await registerPage.expectError('Email is required');
   });
 
   test('User cannot register without password', async () => {
-    await registerPage.fillEmail(validInput.email);
+    const email = uniqueEmail();
+
+    await registerPage.fillEmail(email);
     await registerPage.fillPassword('');
     await registerPage.fillConfirmPassword(validInput.password);
     await registerPage.submit();
@@ -64,7 +72,9 @@ test.describe('Registration page test suite', () => {
   });
 
   test('User cannot register without confirm password', async () => {
-    await registerPage.fillEmail(validInput.email);
+    const email = uniqueEmail();
+
+    await registerPage.fillEmail(email);
     await registerPage.fillPassword(validInput.password);
     await registerPage.fillConfirmPassword('');
     await registerPage.submit();
@@ -72,7 +82,9 @@ test.describe('Registration page test suite', () => {
   });
 
   test('User cannot register with not matching passwords', async () => {
-    await registerPage.fillEmail(validInput.email);
+    const email = uniqueEmail();
+
+    await registerPage.fillEmail(email);
     await registerPage.fillPassword(validInput.password);
     await registerPage.fillConfirmPassword('testingthepass');
     await registerPage.submit();
@@ -83,56 +95,49 @@ test.describe('Registration page test suite', () => {
     await registerPage.clickCancel();
     await expect(registerPage.goToRegButton).toBeVisible();
   });
-});
 
-test.describe('Invalid credentials registration page test suite', () => {
-  let registerPage: RegisterPage;
+  for (const key of Object.keys(invalidEmailInput)) {
+    const { value, testDescription } = invalidEmailInput[key];
 
-  test.beforeEach(async ({ page }) => {
-    registerPage = new RegisterPage(page);
-    await registerPage.gotoreg();
-  });
+    test(`Invalid email: ${testDescription}`, async () => {
+      await registerPage.fillEmail(value);
+      await registerPage.fillPassword(validInput.password);
+      await registerPage.fillConfirmPassword(validInput.password);
+      await registerPage.submit();
 
-  test.describe('Invalid email address field tests', () => {
-    for (const key of Object.keys(invalidEmailInput)) {
-      const { value, testDescription } = invalidEmailInput[key];
+      if (value === '    ' || value === '') {
+        await registerPage.expectError('Email is required');
+      } else {
+        await registerPage.expectError('Invalid email format');
+      }
+    });
+  }
 
-      test(testDescription, async () => {
-        await registerPage.fillEmail(value);
-        await registerPage.fillPassword(validInput.password);
-        await registerPage.fillConfirmPassword(validInput.password);
-        await registerPage.submit();
+  for (const key of Object.keys(invalidPasswordInput)) {
+    const { value, testDescription } = invalidPasswordInput[key];
+    test(`Invalid password: ${testDescription}`, async () => {
+      const email = uniqueEmail();
 
-        value === '    ' || value === ''
-          ? await registerPage.expectError('Email is required')
-          : await registerPage.expectError('Invalid email format');
-      });
-    }
-  });
+      await registerPage.fillEmail(email);
+      await registerPage.fillPassword(value);
+      await registerPage.fillConfirmPassword(value);
+      await registerPage.submit();
 
-  test.describe('Invalid password field tests', () => {
-    for (const key of Object.keys(invalidPasswordInput)) {
-      const { value, testDescription } = invalidPasswordInput[key];
+      if (value === '' || value === '    ') {
+        await registerPage.expectError('Password is required');
+      }
 
-      test(testDescription, async () => {
-        await registerPage.fillEmail(validInput.email);
-        await registerPage.fillPassword(value);
-        await registerPage.fillConfirmPassword(value);
-        await registerPage.submit();
+      if (value.length <= 4 && value.trim().length !== 0) {
+        await registerPage.expectError(
+          'Password must be 8 characters at minimum',
+        );
+      }
 
-        if (value === '' || value === '    ')
-          await registerPage.expectError('Password is required');
-
-        if (value.length <= 4 && value.trim().length !== 0)
-          await registerPage.expectError(
-            'Password must be 8 characters at minimum',
-          );
-
-        if (value.length > 32 && value.trim().length !== 0)
-          await registerPage.expectError(
-            'Password must be 32 characters at maximum',
-          );
-      });
-    }
-  });
+      if (value.length > 32 && value.trim().length !== 0) {
+        await registerPage.expectError(
+          'Password must be 32 characters at maximum',
+        );
+      }
+    });
+  }
 });

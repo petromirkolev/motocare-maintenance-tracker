@@ -50,3 +50,7 @@ export const invalidPasswordInput = {
     testDescription: 'User cannot register with invalid too long password',
   },
 };
+
+export function uniqueEmail(prefix = 'motocare'): string {
+  return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 10000)}@example.com`;
+}
