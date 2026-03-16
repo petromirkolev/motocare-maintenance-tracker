@@ -10,7 +10,7 @@ test.describe('Maintenance log test suite', () => {
   let loginPage: LoginPage;
   let garagePage: GaragePage;
   let maintenancePage: MaintenancePage;
-  let bike;
+  let bike: ReturnType<typeof makeBike>;
   let currentUser: { email: string; password: string };
 
   const doneAt = '2026-03-16';
@@ -48,17 +48,15 @@ test.describe('Maintenance log test suite', () => {
     await expect(maintenancePage.maintenanceLogModal).toBeVisible();
   });
 
-  test('Maintenance log with valid date and kilometers saves and shows in UI', async () => {
+  test('Maintenance log with valid date and odometer saves and shows in UI', async () => {
     await maintenancePage.goto();
-    await maintenancePage.openMaintenanceLogModal('oil-change');
-    await expect(maintenancePage.maintenanceLogModal).toBeVisible();
 
-    await maintenancePage.fillMaintenanceLog(doneAt, odo);
-    await maintenancePage.saveMaintenanceLog();
-
-    await expect(
-      maintenancePage.oilServiceCard.locator('[data-field="last"]'),
-    ).toContainText('March 16, 2026 at 100 km.');
+    await maintenancePage.logMaintenance('oil-change', doneAt, odo);
+    await maintenancePage.expectTaskFieldContains(
+      'oil-change',
+      'last',
+      'March 16, 2026 at 100 km.',
+    );
   });
 
   test('Canceling maintenance log does not change UI', async () => {
@@ -69,9 +67,11 @@ test.describe('Maintenance log test suite', () => {
     await maintenancePage.fillMaintenanceLog(doneAt, odo);
     await maintenancePage.cancelMaintenanceLog();
 
-    await expect(
-      maintenancePage.oilServiceCard.locator('[data-field="last"]'),
-    ).toContainText('Never logged');
+    await maintenancePage.expectTaskFieldContains(
+      'oil-change',
+      'last',
+      'Never logged',
+    );
   });
 
   test('Maintenance log negative odo is rejected', async () => {
@@ -87,75 +87,66 @@ test.describe('Maintenance log test suite', () => {
 
   test('Page reload preserves maintenance logs', async () => {
     await maintenancePage.goto();
-    await maintenancePage.openMaintenanceLogModal('oil-change');
-    await expect(maintenancePage.maintenanceLogModal).toBeVisible();
 
-    await maintenancePage.fillMaintenanceLog(doneAt, odo);
-    await maintenancePage.saveMaintenanceLog();
-
-    await expect(
-      maintenancePage.oilServiceCard.locator('[data-field="last"]'),
-    ).toContainText('March 16, 2026 at 100 km.');
+    await maintenancePage.logMaintenance('oil-change', doneAt, odo);
+    await maintenancePage.expectTaskFieldContains(
+      'oil-change',
+      'last',
+      'March 16, 2026 at 100 km.',
+    );
 
     await maintenancePage.page.reload();
     await maintenancePage.goto();
 
-    await expect(
-      maintenancePage.oilServiceCard.locator('[data-field="last"]'),
-    ).toContainText('March 16, 2026 at 100 km.');
+    await maintenancePage.expectTaskFieldContains(
+      'oil-change',
+      'last',
+      'March 16, 2026 at 100 km.',
+    );
   });
 
   test('Newer maintenance log replaces current maintenance log', async () => {
     await maintenancePage.goto();
-    await maintenancePage.openMaintenanceLogModal('oil-change');
-    await expect(maintenancePage.maintenanceLogModal).toBeVisible();
 
-    await maintenancePage.fillMaintenanceLog(doneAt, odo);
-    await maintenancePage.saveMaintenanceLog();
-
-    await expect(
-      maintenancePage.oilServiceCard.locator('[data-field="last"]'),
-    ).toContainText('March 16, 2026 at 100 km.');
+    await maintenancePage.logMaintenance('oil-change', doneAt, odo);
+    await maintenancePage.expectTaskFieldContains(
+      'oil-change',
+      'last',
+      'March 16, 2026 at 100 km.',
+    );
 
     await maintenancePage.page.reload();
-
     await maintenancePage.goto();
-    await maintenancePage.openMaintenanceLogModal('oil-change');
-    await expect(maintenancePage.maintenanceLogModal).toBeVisible();
 
-    await maintenancePage.fillMaintenanceLog('2026-03-17', '200');
-    await maintenancePage.saveMaintenanceLog();
-
-    await expect(
-      maintenancePage.oilServiceCard.locator('[data-field="last"]'),
-    ).toContainText('March 17, 2026 at 200 km.');
+    await maintenancePage.logMaintenance('oil-change', '2026-03-17', '200');
+    await maintenancePage.expectTaskFieldContains(
+      'oil-change',
+      'last',
+      'March 17, 2026 at 200 km.',
+    );
   });
 
   test('Logging one maintenance item does not affect another maintenance item', async () => {
     await maintenancePage.goto();
-    await maintenancePage.openMaintenanceLogModal('oil-change');
-    await expect(maintenancePage.maintenanceLogModal).toBeVisible();
 
-    await maintenancePage.fillMaintenanceLog(doneAt, odo);
-    await maintenancePage.saveMaintenanceLog();
+    await maintenancePage.logMaintenance('oil-change', doneAt, odo);
+    await maintenancePage.expectTaskFieldContains(
+      'oil-change',
+      'last',
+      'March 16, 2026 at 100 km.',
+    );
 
-    await expect(
-      maintenancePage.oilServiceCard.locator('[data-field="last"]'),
-    ).toContainText('March 16, 2026 at 100 km.');
-
-    await maintenancePage.openMaintenanceLogModal('coolant-change');
-    await expect(maintenancePage.maintenanceLogModal).toBeVisible();
-
-    await maintenancePage.fillMaintenanceLog('2026-03-18', '300');
-    await maintenancePage.saveMaintenanceLog();
-
-    await expect(
-      maintenancePage.oilServiceCard.locator('[data-field="last"]'),
-    ).toContainText('March 16, 2026 at 100 km.');
-
-    await expect(
-      maintenancePage.coolantServiceCard.locator('[data-field="last"]'),
-    ).toContainText('March 18, 2026 at 300 km.');
+    await maintenancePage.logMaintenance('coolant-change', '2026-03-18', '300');
+    await maintenancePage.expectTaskFieldContains(
+      'oil-change',
+      'last',
+      'March 16, 2026 at 100 km.',
+    );
+    await maintenancePage.expectTaskFieldContains(
+      'coolant-change',
+      'last',
+      'March 18, 2026 at 300 km.',
+    );
   });
 
   test('Logging maintenance for bike A does not affect bike B', async ({
@@ -172,15 +163,12 @@ test.describe('Maintenance log test suite', () => {
 
     await bikeCard.click();
 
-    await maintenancePage.openMaintenanceLogModal('oil-change');
-    await expect(maintenancePage.maintenanceLogModal).toBeVisible();
-
-    await maintenancePage.fillMaintenanceLog(doneAt, odo);
-    await maintenancePage.saveMaintenanceLog();
-
-    await expect(
-      maintenancePage.oilServiceCard.locator('[data-field="last"]'),
-    ).toContainText('March 16, 2026 at 100 km.');
+    await maintenancePage.logMaintenance('oil-change', doneAt, odo);
+    await maintenancePage.expectTaskFieldContains(
+      'oil-change',
+      'last',
+      'March 16, 2026 at 100 km.',
+    );
 
     await page.reload();
 
@@ -190,8 +178,10 @@ test.describe('Maintenance log test suite', () => {
 
     await bike2Card.click();
 
-    await expect(
-      maintenancePage.oilServiceCard.locator('[data-field="last"]'),
-    ).toContainText('Never logged');
+    await maintenancePage.expectTaskFieldContains(
+      'oil-change',
+      'last',
+      'Never logged',
+    );
   });
 });

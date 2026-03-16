@@ -10,7 +10,7 @@ test.describe('Maintenance schedule test suite', () => {
   let loginPage: LoginPage;
   let garagePage: GaragePage;
   let maintenancePage: MaintenancePage;
-  let bike;
+  let bike: ReturnType<typeof makeBike>;
   let currentUser: { email: string; password: string };
 
   const days = '100';
@@ -50,19 +50,10 @@ test.describe('Maintenance schedule test suite', () => {
 
   test('Maintenance schedule with valid days and kilometers saves and shows in UI', async () => {
     await maintenancePage.goto();
-    await maintenancePage.openMaintenanceScheduleModal('oil-change');
-    await expect(maintenancePage.maintenanceScheduleModal).toBeVisible();
 
-    await maintenancePage.fillMaintenanceSchedule(days, km);
-    await maintenancePage.saveMaintenanceSchedule();
-
-    await expect(
-      maintenancePage.oilServiceCard.locator('[data-field="due"]'),
-    ).toContainText('100');
-
-    await expect(
-      maintenancePage.oilServiceCard.locator('[data-field="due"]'),
-    ).toContainText('1000');
+    await maintenancePage.scheduleMaintenance('oil-change', days, km);
+    await maintenancePage.expectTaskFieldContains('oil-change', 'due', '100');
+    await maintenancePage.expectTaskFieldContains('oil-change', 'due', '1000');
   });
 
   test('Maintenance schedule with missing days is rejected', async () => {
@@ -133,6 +124,7 @@ test.describe('Maintenance schedule test suite', () => {
 
     await maintenancePage.fillMaintenanceSchedule(days, '-100');
     await maintenancePage.saveMaintenanceSchedule();
+
     await maintenancePage.expectScheduleError(
       'Interval kilometers must be a positive number',
     );
@@ -145,6 +137,7 @@ test.describe('Maintenance schedule test suite', () => {
 
     await maintenancePage.fillMaintenanceSchedule('-100', km);
     await maintenancePage.saveMaintenanceSchedule();
+
     await maintenancePage.expectScheduleError(
       'Interval days must be a positive number',
     );
@@ -159,11 +152,10 @@ test.describe('Maintenance schedule test suite', () => {
     await maintenancePage.cancelMaintenanceSchedule();
 
     await expect(
-      maintenancePage.oilServiceCard.locator('[data-field="due"]'),
+      maintenancePage.getTaskField('oil-change', 'due'),
     ).not.toContainText('100');
-
     await expect(
-      maintenancePage.oilServiceCard.locator('[data-field="due"]'),
+      maintenancePage.getTaskField('oil-change', 'due'),
     ).not.toContainText('1000');
   });
 
@@ -171,57 +163,39 @@ test.describe('Maintenance schedule test suite', () => {
     page,
   }) => {
     await maintenancePage.goto();
-    await maintenancePage.openMaintenanceScheduleModal('oil-change');
-    await expect(maintenancePage.maintenanceScheduleModal).toBeVisible();
 
-    await maintenancePage.fillMaintenanceSchedule(days, km);
-    await maintenancePage.saveMaintenanceSchedule();
-
-    await expect(
-      maintenancePage.oilServiceCard.locator('[data-field="due"]'),
-    ).toContainText('100');
-
-    await expect(
-      maintenancePage.oilServiceCard.locator('[data-field="due"]'),
-    ).toContainText('1000');
+    await maintenancePage.scheduleMaintenance('oil-change', days, km);
+    await maintenancePage.expectTaskFieldContains('oil-change', 'due', '100');
+    await maintenancePage.expectTaskFieldContains('oil-change', 'due', '1000');
 
     await page.reload();
     await maintenancePage.goto();
 
-    await expect(
-      maintenancePage.oilServiceCard.locator('[data-field="due"]'),
-    ).toContainText('100');
-
-    await expect(
-      maintenancePage.oilServiceCard.locator('[data-field="due"]'),
-    ).toContainText('1000');
+    await maintenancePage.expectTaskFieldContains('oil-change', 'due', '100');
+    await maintenancePage.expectTaskFieldContains('oil-change', 'due', '1000');
   });
 
-  test('Scheduling one maintenance log does not replace another log', async () => {
+  test('Scheduling one maintenance item does not affect another maintenance item', async () => {
     await maintenancePage.goto();
-    await maintenancePage.openMaintenanceScheduleModal('oil-change');
-    await expect(maintenancePage.maintenanceScheduleModal).toBeVisible();
 
-    await maintenancePage.fillMaintenanceSchedule(days, km);
-    await maintenancePage.saveMaintenanceSchedule();
+    await maintenancePage.scheduleMaintenance('oil-change', days, km);
+    await maintenancePage.expectTaskFieldContains(
+      'oil-change',
+      'due',
+      'Every 100 days or 1000 km',
+    );
 
-    await expect(
-      maintenancePage.oilServiceCard.locator('[data-field="due"]'),
-    ).toContainText('Every 100 days or 1000 km');
-
-    await maintenancePage.openMaintenanceScheduleModal('coolant-change');
-    await expect(maintenancePage.maintenanceScheduleModal).toBeVisible();
-
-    await maintenancePage.fillMaintenanceSchedule('400', '10000');
-    await maintenancePage.saveMaintenanceSchedule();
-
-    await expect(
-      maintenancePage.oilServiceCard.locator('[data-field="due"]'),
-    ).toContainText('Every 100 days or 1000 km');
-
-    await expect(
-      maintenancePage.coolantServiceCard.locator('[data-field="due"]'),
-    ).toContainText('Every 400 days or 10000 km');
+    await maintenancePage.scheduleMaintenance('coolant-change', '400', '10000');
+    await maintenancePage.expectTaskFieldContains(
+      'oil-change',
+      'due',
+      'Every 100 days or 1000 km',
+    );
+    await maintenancePage.expectTaskFieldContains(
+      'coolant-change',
+      'due',
+      'Every 400 days or 10000 km',
+    );
   });
 
   test('Scheduling maintenance for bike A does not affect bike B', async ({
@@ -238,19 +212,9 @@ test.describe('Maintenance schedule test suite', () => {
 
     await bikeCard.click();
 
-    await maintenancePage.openMaintenanceScheduleModal('oil-change');
-    await expect(maintenancePage.maintenanceScheduleModal).toBeVisible();
-
-    await maintenancePage.fillMaintenanceSchedule(days, km);
-    await maintenancePage.saveMaintenanceSchedule();
-
-    await expect(
-      maintenancePage.oilServiceCard.locator('[data-field="due"]'),
-    ).toContainText('100');
-
-    await expect(
-      maintenancePage.oilServiceCard.locator('[data-field="due"]'),
-    ).toContainText('1000');
+    await maintenancePage.scheduleMaintenance('oil-change', days, km);
+    await maintenancePage.expectTaskFieldContains('oil-change', 'due', '100');
+    await maintenancePage.expectTaskFieldContains('oil-change', 'due', '1000');
 
     await page.reload();
 
@@ -260,8 +224,10 @@ test.describe('Maintenance schedule test suite', () => {
 
     await bike2Card.click();
 
-    await expect(
-      maintenancePage.oilServiceCard.locator('[data-field="due"]'),
-    ).toContainText('Not scheduled yet');
+    await maintenancePage.expectTaskFieldContains(
+      'oil-change',
+      'due',
+      'Not scheduled yet',
+    );
   });
 });

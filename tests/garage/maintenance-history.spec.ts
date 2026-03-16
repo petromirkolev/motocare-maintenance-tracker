@@ -10,7 +10,7 @@ test.describe('Maintenance history test suite', () => {
   let loginPage: LoginPage;
   let garagePage: GaragePage;
   let maintenancePage: MaintenancePage;
-  let bike;
+  let bike: ReturnType<typeof makeBike>;
   let currentUser: { email: string; password: string };
 
   const doneAt = '2026-03-16';
@@ -44,6 +44,7 @@ test.describe('Maintenance history test suite', () => {
 
   test('Maintenance history is empty when no maintenance logs are saved', async () => {
     await maintenancePage.goto();
+
     await expect(maintenancePage.maintenanceHistoryContainer).toContainText(
       'No service history yet',
     );
@@ -51,19 +52,17 @@ test.describe('Maintenance history test suite', () => {
 
   test('New history log appears on maintenance log submit', async () => {
     await maintenancePage.goto();
+
     await expect(maintenancePage.maintenanceHistoryContainer).toContainText(
       'No service history yet',
     );
 
-    await maintenancePage.openMaintenanceLogModal('oil-change');
-    await expect(maintenancePage.maintenanceLogModal).toBeVisible();
-
-    await maintenancePage.fillMaintenanceLog(doneAt, odo);
-    await maintenancePage.saveMaintenanceLog();
-
-    await expect(
-      maintenancePage.oilServiceCard.locator('[data-field="last"]'),
-    ).toContainText('March 16, 2026 at 100 km.');
+    await maintenancePage.logMaintenance('oil-change', doneAt, odo);
+    await maintenancePage.expectTaskFieldContains(
+      'oil-change',
+      'last',
+      'March 16, 2026 at 100 km.',
+    );
 
     await expect(maintenancePage.maintenanceHistoryContainer).toContainText(
       'OIL CHANGE Done on March 16, 2026 at 100 km.',
@@ -72,29 +71,24 @@ test.describe('Maintenance history test suite', () => {
 
   test('History panel shows only the most recent maintenance log', async () => {
     await maintenancePage.goto();
+
     await expect(maintenancePage.maintenanceHistoryContainer).toContainText(
       'No service history yet',
     );
 
-    await maintenancePage.openMaintenanceLogModal('oil-change');
-    await expect(maintenancePage.maintenanceLogModal).toBeVisible();
+    await maintenancePage.logMaintenance('oil-change', doneAt, odo);
+    await maintenancePage.expectTaskFieldContains(
+      'oil-change',
+      'last',
+      'March 16, 2026 at 100 km.',
+    );
 
-    await maintenancePage.fillMaintenanceLog(doneAt, odo);
-    await maintenancePage.saveMaintenanceLog();
-
-    await expect(
-      maintenancePage.oilServiceCard.locator('[data-field="last"]'),
-    ).toContainText('March 16, 2026 at 100 km.');
-
-    await maintenancePage.openMaintenanceLogModal('coolant-change');
-    await expect(maintenancePage.maintenanceLogModal).toBeVisible();
-
-    await maintenancePage.fillMaintenanceLog('2026-03-17', '200');
-    await maintenancePage.saveMaintenanceLog();
-
-    await expect(
-      maintenancePage.coolantServiceCard.locator('[data-field="last"]'),
-    ).toContainText('March 17, 2026 at 200 km.');
+    await maintenancePage.logMaintenance('coolant-change', '2026-03-17', '200');
+    await maintenancePage.expectTaskFieldContains(
+      'coolant-change',
+      'last',
+      'March 17, 2026 at 200 km.',
+    );
 
     await expect(maintenancePage.maintenanceHistoryContainer).toContainText(
       'COOLANT CHANGE Done on March 17, 2026 at 200 km.',
@@ -107,19 +101,17 @@ test.describe('Maintenance history test suite', () => {
 
   test('History log persists after refresh', async () => {
     await maintenancePage.goto();
+
     await expect(maintenancePage.maintenanceHistoryContainer).toContainText(
       'No service history yet',
     );
 
-    await maintenancePage.openMaintenanceLogModal('oil-change');
-    await expect(maintenancePage.maintenanceLogModal).toBeVisible();
-
-    await maintenancePage.fillMaintenanceLog(doneAt, odo);
-    await maintenancePage.saveMaintenanceLog();
-
-    await expect(
-      maintenancePage.oilServiceCard.locator('[data-field="last"]'),
-    ).toContainText('March 16, 2026 at 100 km.');
+    await maintenancePage.logMaintenance('oil-change', doneAt, odo);
+    await maintenancePage.expectTaskFieldContains(
+      'oil-change',
+      'last',
+      'March 16, 2026 at 100 km.',
+    );
 
     await expect(maintenancePage.maintenanceHistoryContainer).toContainText(
       'OIL CHANGE Done on March 16, 2026 at 100 km.',
@@ -145,15 +137,12 @@ test.describe('Maintenance history test suite', () => {
 
     await bikeCard.click();
 
-    await maintenancePage.openMaintenanceLogModal('oil-change');
-    await expect(maintenancePage.maintenanceLogModal).toBeVisible();
-
-    await maintenancePage.fillMaintenanceLog(doneAt, odo);
-    await maintenancePage.saveMaintenanceLog();
-
-    await expect(
-      maintenancePage.oilServiceCard.locator('[data-field="last"]'),
-    ).toContainText('March 16, 2026 at 100 km.');
+    await maintenancePage.logMaintenance('oil-change', doneAt, odo);
+    await maintenancePage.expectTaskFieldContains(
+      'oil-change',
+      'last',
+      'March 16, 2026 at 100 km.',
+    );
 
     await expect(maintenancePage.maintenanceHistoryContainer).toContainText(
       'OIL CHANGE Done on March 16, 2026 at 100 km.',
