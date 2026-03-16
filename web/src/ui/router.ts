@@ -331,6 +331,12 @@ function bindEvents(): void {
           const input =
             maintenanceStore.readMaintenanceScheduleForm(scheduleForm);
 
+          if (Number(input.interval_days) <= 0)
+            throw new Error('Interval days must be a positive number');
+
+          if (Number(input.interval_km) <= 0)
+            throw new Error('Interval kilometers must be a positive number');
+
           const bike_id = appState.selectedBikeId;
           if (!bike_id) throw new Error('No bike selected');
 
