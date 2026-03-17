@@ -260,6 +260,5 @@ GitHub Actions runs the Playwright suite on push / pull request. CI setup includ
 
 Planned next improvements:
 
-- add screenshots / GIFs for README presentation
 - tighten reusable test helpers further
 - improve API test organization and shared helpers
