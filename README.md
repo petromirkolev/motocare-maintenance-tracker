@@ -10,6 +10,7 @@ MotoCare is not a static demo. It demonstrates work across the full app stack:
 - **Backend:** Express + TypeScript REST API
 - **Persistence:** SQLite database
 - **Automation:** Playwright E2E tests run from the repo root
+- **API Testing:** direct backend contract and validation checks
 - **CI:** GitHub Actions workflow running the Playwright suite
 - **Testability:** "data-testid" selectors, reusable Page Objects, isolated test data, reset test DB workflow
 
@@ -132,7 +133,39 @@ The Playwright suite currently covers:
 - day-based and km-based transitions
 - bike isolation
 
-At the time of writing, the suite contains 87 Playwright tests.
+### API coverage
+
+#### Auth API
+
+- register success
+- duplicate email rejection
+- invalid email rejection
+- password validation
+- login success
+- invalid login rejection
+- missing field validation
+
+#### Garage API
+
+- create bike success
+- invalid year rejection
+- negative odometer rejection
+- update bike success
+- lower odometer rejection
+- delete bike success
+
+#### Maintenance API
+
+- schedule success
+- schedule validation errors
+- log success
+- invalid odometer rejection
+- bike isolation
+- maintenance item isolation
+
+-
+
+At the time of writing, the suite contains 114 Playwright tests.
 
 ## How tests are run
 
@@ -194,7 +227,6 @@ GitHub Actions runs the Playwright suite on push / pull request. CI setup includ
 
 Planned next improvements:
 
-- add API-level tests for core backend flows
-- improve README screenshots / visuals
-- continue tightening reusable test helpers
-- polish project
+- add screenshots / GIFs for README presentation
+- tighten reusable test helpers further
+- improve API test organization and shared helpers

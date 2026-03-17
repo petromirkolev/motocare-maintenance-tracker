@@ -110,7 +110,7 @@ maintenanceRouter.post('/upsert', async (req, res) => {
       interval_days: interval_days ?? existing.interval_days,
     });
 
-    res.json({ message: 'Maintenance updated successfully' });
+    res.json({ message: 'Maintenance scheduled successfully' });
   } catch (error) {
     console.error('Upsert maintenance failed:', error);
     res.status(500).json({ error: 'Internal server error' });
