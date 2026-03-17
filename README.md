@@ -1,6 +1,6 @@
 # MotoCare
 
-MotoCare is a lightweight motorcycle maintenance tracker that helps you stay on top of service intervals by **km** and/or **time**. It is a full-stack motorcycle maintenance tracker built as a QA Automation portfolio project. It manages motorcycles, maintenance schedules, service logs, recent service history, and derived status states like **On Track**, **Due Soon**, and **Overdue**. It’s designed to be a real, usable app, with a deterministic backend so it’s easy to test with Playwright and run via Docker.
+MotoCare is a lightweight motorcycle maintenance tracker that helps you stay on top of service intervals by **km** and/or **time**. It is a full-stack project built as a QA Automation portfolio project. It manages motorcycles, maintenance schedules, service logs, recent service history, and derived status states like **On Track**, **Due Soon**, and **Overdue**. It’s designed to be a real, usable app, with a deterministic backend so it’s easy to test with Playwright and run via Docker.
 
 ## What this project demonstrates
 
@@ -12,9 +12,9 @@ MotoCare is not a static demo. It demonstrates work across the full app stack:
 - **Automation:** Playwright E2E tests run from the repo root
 - **API Testing:** direct backend contract and validation checks
 - **CI:** GitHub Actions workflow running the Playwright suite
-- **Testability:** "data-testid" selectors, reusable Page Objects, isolated test data, reset test DB workflow
+- **Testability:** stable data-testid selectors, reusable Page Objects, isolated test data, reset test DB workflow
 
-## Current features
+## Features
 
 ### Authentication
 
@@ -141,6 +141,8 @@ The Playwright suite currently covers:
 
 ### API coverage
 
+The project currently includes both Playwright E2E tests and Playwright API tests.
+
 #### Auth API
 
 - register success
@@ -168,8 +170,6 @@ The Playwright suite currently covers:
 - invalid odometer rejection
 - bike isolation
 - maintenance item isolation
-
--
 
 At the time of writing, the suite contains 114 Playwright tests.
 
