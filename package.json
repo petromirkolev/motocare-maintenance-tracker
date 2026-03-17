@@ -7,7 +7,12 @@
     "test:e2e": "node tests/scripts/reset-test-db.js && playwright test",
     "test:e2e:ui": "node tests/scripts/reset-test-db.js && playwright test --ui",
     "test:e2e:headed": "node tests/scripts/reset-test-db.js && playwright test --headed",
-    "test:e2e:debug": "node tests/scripts/reset-test-db.js && playwright test --debug"
+    "test:e2e:debug": "node tests/scripts/reset-test-db.js && playwright test --debug",
+    "db:test:reset": "node tests/scripts/reset-test-db.js",
+    "docker:test:up": "docker compose -f docker-compose.yml -f docker-compose.test.yml up --build -d",
+    "docker:test:down": "docker compose -f docker-compose.yml -f docker-compose.test.yml down",
+    "test:docker": "playwright test --config=playwright.docker.config.ts",
+    "test:docker:fresh": "npm run db:test:reset && npm run docker:test:up && npm run test:docker"
   },
   "repository": {
     "type": "git",
