@@ -1,18 +1,16 @@
 # MotoCare
 
-MotoCare is a lightweight motorcycle maintenance tracker that helps you stay on top of service intervals by **km** and/or **time**. It is a full-stack project built as a QA Automation portfolio project. It manages motorcycles, maintenance schedules, service logs, recent service history, and derived status states like **On Track**, **Due Soon**, and **Overdue**. It’s designed to be a real, usable app, with a deterministic backend so it’s easy to test with Playwright and run via Docker.
+MotoCare is a lightweight motorcycle maintenance tracker built as a full-stack QA Automation portfolio project. It helps users track motorcycles, maintenance schedules, service logs, recent maintenance history, and derived maintenance states such as **On Track**, **Due Soon**, and **Overdue**.
 
 ## What this project demonstrates
 
-MotoCare is not a static demo. It demonstrates work across the full app stack:
-
-- **Frontend:** Vite + Vanilla TypeScript UI
-- **Backend:** Express + TypeScript REST API
-- **Persistence:** SQLite database
-- **Automation:** Playwright E2E tests run from the repo root
-- **API Testing:** direct backend contract and validation checks
-- **CI:** GitHub Actions workflow running the Playwright suite
-- **Testability:** stable data-testid selectors, reusable Page Objects, isolated test data, reset test DB workflow
+- building and testing a stateful full-stack app
+- frontend and backend validation working together
+- SQLite persistence and derived domain logic
+- Playwright E2E coverage across real user flows
+- Playwright API testing for backend contract and validation checks
+- CI execution through GitHub Actions
+- testability-focused design: stable data-testid selectors, reusable Page Objects, isolated test data, and a resettable test DB workflow
 
 ## Features
 
@@ -53,13 +51,13 @@ Users can:
   - **Due Soon**
   - **Overdue**
 
-  ![MotoCare add maintenance flow](docs/add-maintenance.gif)
+![MotoCare add maintenance flow](docs/add-maintenance.gif)
 
 ### Maintenance history and status
 
 - Save maintenance log entries in the backend
-- Persist current maintenance state across refresh/login
-- Show most recent maintenance history entry in the UI
+- Persist current maintenance state across refresh and login
+- Show the most recent maintenance history entry in the UI
 - Derive maintenance status from schedule + last log + bike odometer
 - Keep maintenance state isolated per bike and per maintenance item
 
@@ -77,7 +75,7 @@ Users can:
 ```text
 /web    -> frontend client (Vite + TypeScript)
 /api    -> backend REST API (Node + Express + TypeScript)
-/tests  -> Playwright E2E tests, Page Objects, test helpers
+/tests  -> Playwright E2E tests, Page Objects, API tests, test helpers
 SQLite  -> persistence layer
 ```
 
@@ -89,7 +87,7 @@ The Playwright suite currently covers:
 
 - registration happy path
 - duplicate registration
-- missing/invalid credentials
+- missing or invalid credentials
 - login happy path
 - invalid login cases
 
@@ -107,7 +105,7 @@ The Playwright suite currently covers:
 
 - open schedule modal
 - valid save flow
-- invalid/missing values
+- invalid or missing values
 - cancel flow
 - persistence after reload
 - bike isolation
@@ -142,7 +140,7 @@ The Playwright suite currently covers:
 
 ### API coverage
 
-The project currently includes both Playwright E2E tests and Playwright API tests.
+The project includes both Playwright E2E tests and Playwright API tests.
 
 #### Auth API
 
@@ -176,13 +174,16 @@ At the time of writing, the suite contains 114 Playwright tests.
 
 ## How tests are run
 
-Playwright is initialized at the repo root, because tests target the whole system, not just the frontend. The root test command resets a dedicated SQLite test database before running the suite.
+Playwright is initialized at the repo root because tests target the whole system, not just the frontend. The root test workflow resets a dedicated SQLite test database before running the suite.
+
+### Root test harness
 
 ```bash
+npm install
 npm run test:e2e
 ```
 
-Other available commands:
+### Other available commands
 
 ```bash
 npm run test:e2e:ui
@@ -190,9 +191,20 @@ npm run test:e2e:headed
 npm run test:e2e:debug
 ```
 
+### Run Playwright against the Dockerized app
+
+```bash
+npm run db:test:reset
+npm run docker:test:up
+npm run test:docker
+npm run docker:test:down
+```
+
+This runs the Playwright suite against the app served by Docker Compose, using a separate SQLite test database.
+
 ## Running locally
 
-You need to run both the frontend and the backend.
+You need to run both the backend and the frontend.
 
 Terminal 1 — API
 
@@ -202,6 +214,8 @@ npm install
 npm run dev
 ```
 
+Runs on http://localhost:3001.
+
 Terminal 2 — Web
 
 ```bash
@@ -210,44 +224,39 @@ npm install
 npm run dev
 ```
 
+Runs on http://localhost:5173.
+
 Then open the Vite URL shown in the terminal.
 
 ## Run with Docker
 
 This project can be run with Docker Compose.
 
-### Start the full stack
+Start the full stack
 
 ```bash
 docker compose up --build
 ```
 
-App URLs
+### App URLs
 
-- Frontend: http://localhost:4173
-- API: http://localhost:3001
+Frontend: http://localhost:4173
+API: http://localhost:3001
 
-### Stop the containers
+Stop the containers
 
 ```bash
 docker compose down
 ```
 
-### Notes
+## Notes
 
-- SQLite data is persisted through the ./api/data folder.
-- The API and frontend are containerized separately and run together through Docker Compose.
-
-## Root test harness
-
-```bash
-npm install
-npm run test:e2e
-```
+SQLite data is persisted through the ./api/data folder.
+The API and frontend are containerized separately and run together through Docker Compose.
 
 ## CI
 
-GitHub Actions runs the Playwright suite on push / pull request. CI setup includes:
+GitHub Actions runs the Playwright suite on push and pull request. CI setup includes:
 
 - root test harness install
 - api/ install
@@ -255,10 +264,3 @@ GitHub Actions runs the Playwright suite on push / pull request. CI setup includ
 - Playwright browser install
 - full E2E suite execution
 - test report artifact upload
-
-## Next steps
-
-Planned next improvements:
-
-- tighten reusable test helpers further
-- improve API test organization and shared helpers
