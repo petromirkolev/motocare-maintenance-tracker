@@ -1,8 +1,5 @@
 import { test, expect, APIRequestContext } from '@playwright/test';
-import { uniqueEmail } from '../utils/test-data';
-
-const API_URL = 'http://127.0.0.1:3001';
-const PASSWORD = 'testingpass';
+import { uniqueEmail, API_URL, PASSWORD } from '../utils/test-data';
 
 async function registerUser(
   request: APIRequestContext,

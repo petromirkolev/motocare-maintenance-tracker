@@ -1,3 +1,6 @@
+export const API_URL = 'http://127.0.0.1:3001';
+export const PASSWORD = 'testingpass';
+
 export const validInput = {
   email: 'test@test.test',
   diffrentConfirmEmail: 'test1@test.test',
