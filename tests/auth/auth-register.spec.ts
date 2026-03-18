@@ -93,7 +93,7 @@ test.describe('Register page test suite', () => {
 
   test('Cancel button loads login page', async () => {
     await registerPage.clickCancel();
-    await expect(registerPage.goToRegButton).toBeVisible();
+    await expect(registerPage.registerButton).toBeVisible();
   });
 
   for (const key of Object.keys(invalidEmailInput)) {

@@ -2,30 +2,30 @@ import { Page, Locator, expect } from '@playwright/test';
 
 export class RegisterPage {
   readonly page: Page;
-  readonly regScreen: Locator;
-  readonly goToRegButton: Locator;
+  readonly registerScreen: Locator;
+  readonly registerButton: Locator;
   readonly registerEmail: Locator;
   readonly registerPassword: Locator;
   readonly registerConfirmPassword: Locator;
-  readonly registerButton: Locator;
+  readonly registerSubmitButton: Locator;
   readonly registerMessage: Locator;
   readonly backButton: Locator;
 
   constructor(page: Page) {
     this.page = page;
-    this.regScreen = page.getByTestId('screen-register');
-    this.goToRegButton = page.getByTestId('btn-register');
+    this.registerScreen = page.getByTestId('screen-register');
+    this.registerButton = page.getByTestId('btn-register');
     this.registerEmail = page.getByTestId('register-email');
     this.registerPassword = page.getByTestId('register-password');
     this.registerConfirmPassword = page.getByTestId('register-password2');
-    this.registerButton = page.getByTestId('btn-register-submit');
+    this.registerSubmitButton = page.getByTestId('btn-register-submit');
     this.registerMessage = page.getByTestId('reg-hint');
     this.backButton = page.getByTestId('btn-register-back');
   }
 
   async gotoreg(): Promise<void> {
     await this.page.goto('/');
-    await this.goToRegButton.click();
+    await this.registerButton.click();
   }
 
   async fillEmail(email: string): Promise<void> {
@@ -41,7 +41,7 @@ export class RegisterPage {
   }
 
   async submit(): Promise<void> {
-    await this.registerButton.click();
+    await this.registerSubmitButton.click();
   }
 
   async register(email: string, password: string): Promise<void> {
