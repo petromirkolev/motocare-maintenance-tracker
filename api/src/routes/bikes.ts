@@ -77,7 +77,7 @@ bikesRouter.post('/', async (req, res) => {
   }
 
   try {
-    await createBike({
+    const id = await createBike({
       user_id,
       make,
       model,
@@ -85,7 +85,9 @@ bikesRouter.post('/', async (req, res) => {
       odo,
     });
 
-    res.status(201).json({ message: 'Bike created successfully' });
+    res
+      .status(201)
+      .json({ message: 'Bike created successfully', bike: { id } });
   } catch (error) {
     console.error('Create bike failed:', error);
     res.status(500).json({ error: 'Internal server error' });
