@@ -2,7 +2,7 @@ import express from 'express';
 import authRouter from './routes/auth';
 import bikesRouter from './routes/bikes';
 import maintenanceRouter from './routes/maintenance';
-import maintenanceLogsRouter from './routes/maintenance-logs';
+import maintenanceLogsRouter from './routes/maintenance-log';
 import cors from 'cors';
 
 const app = express();
@@ -16,6 +16,6 @@ app.get('/', (_req, res) => {
 app.use('/auth', authRouter);
 app.use('/bikes', bikesRouter);
 app.use('/maintenance', maintenanceRouter);
-app.use('/maintenance-logs', maintenanceLogsRouter);
+app.use('/maintenance-log', maintenanceLogsRouter);
 
 export default app;

@@ -6,8 +6,7 @@ import type {
   ErrorResponse,
   CreateBikeResponse,
 } from '../types/bikes';
-
-const API_BASE_URL = 'http://localhost:3001';
+import { API_BASE_URL } from './base';
 
 export async function fetchBikes(): Promise<Bike[]> {
   const currentUser = getCurrentUser();

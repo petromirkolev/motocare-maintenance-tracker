@@ -6,6 +6,7 @@ export type Maintenance = {
   odo: number | null;
   interval_km: number | null;
   interval_days: number | null;
+  created_at: string;
 };
 
 export type MaintenanceLogInput = {
@@ -18,22 +19,15 @@ export type MaintenanceScheduleInput = {
   interval_km: number | null;
 };
 
-export type MaintenanceDto = {
-  id: string;
-  bike_id: string;
-  name: string;
-  date: string | null;
-  odo: number | null;
-  interval_km: number | null;
-  interval_days: number | null;
-  created_at: string;
-};
-
 export type ListMaintenanceResponse = {
-  maintenance: MaintenanceDto[];
+  maintenance: Maintenance[];
 };
 
-export type UpsertMaintenanceResponse = {
+export type LogMaintenanceResponse = {
+  message: string;
+};
+
+export type ScheduleMaintenanceResponse = {
   message: string;
 };
 

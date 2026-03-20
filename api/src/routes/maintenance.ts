@@ -32,7 +32,7 @@ maintenanceRouter.get('/', async (req, res) => {
   }
 });
 
-maintenanceRouter.post('/upsert', async (req, res) => {
+maintenanceRouter.post('/log', async (req, res) => {
   const body = (req.body ?? {}) as UpsertMaintenanceBody;
   const bike_id = normalizeString(body.bike_id);
   const name = normalizeString(body.name);
@@ -43,15 +43,10 @@ maintenanceRouter.post('/upsert', async (req, res) => {
     return;
   }
 
-  if (
-    date === undefined &&
-    odo === undefined &&
-    interval_km === undefined &&
-    interval_days === undefined
-  ) {
-    res
-      .status(400)
-      .json({ error: 'At least one maintenance field must be provided' });
+  if (date === undefined && odo === undefined) {
+    res.status(400).json({
+      error: 'At least one maintenance log field must be provided',
+    });
     return;
   }
 
@@ -62,6 +57,45 @@ maintenanceRouter.post('/upsert', async (req, res) => {
 
   if (odo !== undefined && odo !== null && !isNonNegativeInteger(odo)) {
     res.status(400).json({ error: 'odo must be a non-negative integer' });
+    return;
+  }
+
+  try {
+    await createMaintenance({
+      bike_id,
+      name: name.trim(),
+      date: date ?? null,
+      odo: odo ?? null,
+      interval_km: interval_km ?? null,
+      interval_days: interval_days ?? null,
+    });
+
+    res.status(201).json({ message: 'Maintenance created successfully' });
+    return;
+  } catch (error) {
+    console.error('Upsert maintenance failed:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+maintenanceRouter.post('/schedule', async (req, res) => {
+  const body = (req.body ?? {}) as UpsertMaintenanceBody;
+  const bike_id = normalizeString(body.bike_id);
+  const name = normalizeString(body.name);
+  const { date, odo, interval_km, interval_days } = body;
+
+  if (!bike_id || !name) {
+    res.status(400).json({ error: 'bike_id and name are required' });
+    return;
+  }
+
+  if (!interval_km) {
+    res.status(400).json({ error: 'interval_km is required' });
+    return;
+  }
+
+  if (!interval_days) {
+    res.status(400).json({ error: 'interval_days is required' });
     return;
   }
 
@@ -96,7 +130,7 @@ maintenanceRouter.post('/upsert', async (req, res) => {
         interval_days: interval_days ?? null,
       });
 
-      res.status(201).json({ message: 'Maintenance created successfully' });
+      res.status(201).json({ message: 'Maintenance scheduled successfully' });
       return;
     }
 

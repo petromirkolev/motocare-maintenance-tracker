@@ -1,15 +1,14 @@
 import type {
-  MaintenanceLogDto,
+  MaintenanceLog,
+  CreateMaintenanceLogResponse,
   ListMaintenanceLogsResponse,
   ErrorResponse,
-  CreateMaintenanceLogResponse,
 } from '../types/maintenance-log';
-
-const API_BASE_URL = 'http://localhost:3001';
+import { API_BASE_URL } from './base';
 
 export async function fetchMaintenanceLogsByBikeId(
   bike_id: string,
-): Promise<MaintenanceLogDto[]> {
+): Promise<MaintenanceLog[]> {
   const response = await fetch(
     `${API_BASE_URL}/maintenance-logs?bike_id=${encodeURIComponent(bike_id)}`,
   );

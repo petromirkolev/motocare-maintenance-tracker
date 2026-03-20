@@ -1,15 +1,15 @@
 import type {
-  MaintenanceDto,
+  Maintenance,
+  LogMaintenanceResponse,
+  ScheduleMaintenanceResponse,
   ListMaintenanceResponse,
   ErrorResponse,
-  UpsertMaintenanceResponse,
 } from '../types/maintenance';
-
-const API_BASE_URL = 'http://localhost:3001';
+import { API_BASE_URL } from './base';
 
 export async function fetchMaintenanceByBikeId(
   bike_id: string,
-): Promise<MaintenanceDto[]> {
+): Promise<Maintenance[]> {
   const response = await fetch(
     `${API_BASE_URL}/maintenance?bike_id=${encodeURIComponent(bike_id)}`,
   );
@@ -27,15 +27,15 @@ export async function fetchMaintenanceByBikeId(
   return (data as ListMaintenanceResponse).maintenance;
 }
 
-export async function upsertMaintenanceApi(input: {
+export async function logMaintenanceApi(input: {
   bike_id: string;
   name: string;
   date: string | null;
   odo: number | null;
   interval_km: number | null;
   interval_days: number | null;
-}): Promise<UpsertMaintenanceResponse> {
-  const response = await fetch(`${API_BASE_URL}/maintenance/upsert`, {
+}): Promise<LogMaintenanceResponse> {
+  const response = await fetch(`${API_BASE_URL}/maintenance/log`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -44,7 +44,34 @@ export async function upsertMaintenanceApi(input: {
   });
 
   const data = (await response.json()) as
-    | UpsertMaintenanceResponse
+    | LogMaintenanceResponse
+    | ErrorResponse;
+
+  if (!response.ok) {
+    throw new Error('error' in data ? data.error : 'Failed to log maintenance');
+  }
+
+  return data as LogMaintenanceResponse;
+}
+
+export async function scheduleMaintenanceApi(input: {
+  bike_id: string;
+  name: string;
+  date: string | null;
+  odo: number | null;
+  interval_km: number | null;
+  interval_days: number | null;
+}): Promise<ScheduleMaintenanceResponse> {
+  const response = await fetch(`${API_BASE_URL}/maintenance/schedule`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(input),
+  });
+
+  const data = (await response.json()) as
+    | ScheduleMaintenanceResponse
     | ErrorResponse;
 
   if (!response.ok) {
@@ -53,5 +80,5 @@ export async function upsertMaintenanceApi(input: {
     );
   }
 
-  return data as UpsertMaintenanceResponse;
+  return data as ScheduleMaintenanceResponse;
 }

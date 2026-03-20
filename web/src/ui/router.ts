@@ -5,7 +5,7 @@ import { bikeStore, readBikeForm } from '../state/bike-store';
 import { createBikeApi, updateBikeApi, deleteBikeApi } from '../api/bikes';
 import { appState } from '../types/state';
 import { maintenanceStore } from '../state/maintenance-store';
-import { upsertMaintenanceApi } from '../api/maintenance';
+import { logMaintenanceApi, scheduleMaintenanceApi } from '../api/maintenance';
 import { loginUser, registerUser } from '../api/auth';
 import { createMaintenanceLogApi } from '../api/maintenance-logs';
 import {
@@ -290,7 +290,7 @@ function bindEvents(): void {
           if (Number(input.odo) < 0)
             throw new Error('Odo must be a positive number');
 
-          await upsertMaintenanceApi({
+          await logMaintenanceApi({
             bike_id,
             name: currentTask,
             date: input.date,
@@ -351,7 +351,7 @@ function bindEvents(): void {
           const currentTask = appState.currentMaintenanceItem;
           if (!currentTask) throw new Error('No maintenance item selected');
 
-          await upsertMaintenanceApi({
+          await scheduleMaintenanceApi({
             bike_id,
             name: currentTask,
             date: null,
