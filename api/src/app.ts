@@ -16,6 +16,6 @@ app.get('/', (_req, res) => {
 app.use('/auth', authRouter);
 app.use('/bikes', bikesRouter);
 app.use('/maintenance', maintenanceRouter);
-app.use('/maintenance-log', maintenanceLogsRouter);
+app.use('/maintenance-logs', maintenanceLogsRouter);
 
 export default app;
