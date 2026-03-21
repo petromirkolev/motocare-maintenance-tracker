@@ -96,48 +96,52 @@ test.describe('Register page test suite', () => {
     await expect(registerPage.registerButton).toBeVisible();
   });
 
-  for (const key of Object.keys(invalidEmailInput)) {
-    const { value, testDescription } = invalidEmailInput[key];
+  test.describe('Register with invalid email test suite', () => {
+    for (const key of Object.keys(invalidEmailInput)) {
+      const { value, testDescription } = invalidEmailInput[key];
 
-    test(`Invalid email: ${testDescription}`, async () => {
-      await registerPage.fillEmail(value);
-      await registerPage.fillPassword(validInput.password);
-      await registerPage.fillConfirmPassword(validInput.password);
-      await registerPage.submit();
+      test(`Register with ${testDescription}`, async () => {
+        await registerPage.fillEmail(value);
+        await registerPage.fillPassword(validInput.password);
+        await registerPage.fillConfirmPassword(validInput.password);
+        await registerPage.submit();
 
-      if (value === '    ' || value === '') {
-        await registerPage.expectError('Email is required');
-      } else {
-        await registerPage.expectError('Invalid email format');
-      }
-    });
-  }
+        if (value === '    ' || value === '') {
+          await registerPage.expectError('Email is required');
+        } else {
+          await registerPage.expectError('Invalid email format');
+        }
+      });
+    }
+  });
 
-  for (const key of Object.keys(invalidPasswordInput)) {
-    const { value, testDescription } = invalidPasswordInput[key];
-    test(`Invalid password: ${testDescription}`, async () => {
-      const email = uniqueEmail();
+  test.describe('Register with invalid password test suite', () => {
+    for (const key of Object.keys(invalidPasswordInput)) {
+      const { value, testDescription } = invalidPasswordInput[key];
+      test(`Invalid password: ${testDescription}`, async () => {
+        const email = uniqueEmail();
 
-      await registerPage.fillEmail(email);
-      await registerPage.fillPassword(value);
-      await registerPage.fillConfirmPassword(value);
-      await registerPage.submit();
+        await registerPage.fillEmail(email);
+        await registerPage.fillPassword(value);
+        await registerPage.fillConfirmPassword(value);
+        await registerPage.submit();
 
-      if (value === '' || value === '    ') {
-        await registerPage.expectError('Password is required');
-      }
+        if (value === '' || value === '    ') {
+          await registerPage.expectError('Password is required');
+        }
 
-      if (value.length <= 4 && value.trim().length !== 0) {
-        await registerPage.expectError(
-          'Password must be 8 characters at minimum',
-        );
-      }
+        if (value.length <= 4 && value.trim().length !== 0) {
+          await registerPage.expectError(
+            'Password must be 8 characters at minimum',
+          );
+        }
 
-      if (value.length > 32 && value.trim().length !== 0) {
-        await registerPage.expectError(
-          'Password must be 32 characters at maximum',
-        );
-      }
-    });
-  }
+        if (value.length > 32 && value.trim().length !== 0) {
+          await registerPage.expectError(
+            'Password must be 32 characters at maximum',
+          );
+        }
+      });
+    }
+  });
 });
