@@ -2,11 +2,10 @@ const { Client } = require('pg');
 require('dotenv').config({ path: 'api/.env' });
 
 async function resetTestDb() {
-  const databaseUrl = process.env.TEST_DATABASE_URL || process.env.DATABASE_URL;
-
-  if (!databaseUrl) {
-    throw new Error('TEST_DATABASE_URL or DATABASE_URL is required');
+  if (!process.env.TEST_DATABASE_URL) {
+    throw new Error('TEST_DATABASE_URL is required for test runs');
   }
+  const databaseUrl = process.env.TEST_DATABASE_URL;
 
   const client = new Client({
     connectionString: databaseUrl,
