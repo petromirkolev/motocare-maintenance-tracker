@@ -198,8 +198,8 @@ body {
 }
 .auth__subtitle {
   color: var(--muted);
-  font-weight: 700;
-  margin-top: 2px;
+  font-weight: 400;
+  margin-top: 10px;
 }
 
 .form {
