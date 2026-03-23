@@ -66,7 +66,7 @@ function bindEvents(): void {
           const response = await loginUser(input.email, input.password);
 
           setCurrentUser(response.user);
-          await resetState();
+          resetState();
           await initState();
 
           loginForm?.reset();

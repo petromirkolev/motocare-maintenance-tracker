@@ -5,9 +5,11 @@ import type {
 } from '../types/maintenance';
 import { getState } from './state-store';
 import { appState } from '../types/state';
-import { checkDueStatus } from '../utils/service-due-helper';
-import { checkOverdueStatus } from '../utils/service-overdue-helper';
-import { checkServiceItemsStatus } from '../utils/service-items-helper';
+import {
+  getLatestLogForBike,
+  getServiceStatusesForBike,
+} from '../utils/service-helper';
+
 import { markDueTasks, markOverdueTasks } from '../utils/dom-helper';
 
 export const maintenanceStore = {
@@ -124,24 +126,38 @@ export const maintenanceStore = {
     const selectedBike = appState.selectedBikeId;
     if (!selectedBike) return;
 
+    const selectedBikeData = items.bikes.find(
+      (bike) => bike.id === selectedBike,
+    );
+    if (!selectedBikeData) return;
+
     const today = new Date().toISOString().slice(0, 10);
-    const lastServicedItem = items.maintenanceLog.find(
-      (item) => item.bike_id === selectedBike,
+
+    const serviceStatuses = getServiceStatusesForBike(
+      items.maintenance,
+      items.maintenanceLog,
+      selectedBike,
+      Number(selectedBikeData.odo),
+      today,
     );
 
-    const totalServiceItems = items.maintenance.filter((item) =>
-      checkServiceItemsStatus(item, selectedBike),
+    const totalOnTrackItems = serviceStatuses.filter(
+      (item) => !item.status.isOverdue,
     );
 
-    const totalDueItems = items.maintenance.filter((item) =>
-      checkDueStatus(item, selectedBike, today),
+    const totalDueItems = serviceStatuses.filter(
+      (item) => item.status.isDueSoon,
     );
 
-    const totalOverdueItems = items.maintenance.filter((item) =>
-      checkOverdueStatus(item, selectedBike, today),
+    const totalOverdueItems = serviceStatuses.filter(
+      (item) => item.status.isOverdue,
     );
 
-    // Update "Recent History"
+    const lastServicedItem = getLatestLogForBike(
+      items.maintenanceLog,
+      selectedBike,
+    );
+
     if (lastServicedItem !== undefined) {
       dom.maintenanceHistory.querySelector('.empty__title').textContent =
         lastServicedItem.name
@@ -168,13 +184,11 @@ export const maintenanceStore = {
         'Log a service to start building your maintenance timeline.';
     }
 
-    // Update Overdue / Due Soon / On Track
-    dom.maintenanceOnTrack.textContent =
-      totalServiceItems.length - totalOverdueItems.length;
-    dom.maintenanceDueSoon.textContent = totalDueItems.length;
-    dom.maintenanceOverdue.textContent = totalOverdueItems.length;
+    dom.maintenanceOnTrack.textContent = String(totalOnTrackItems.length);
+    dom.maintenanceDueSoon.textContent = String(totalDueItems.length);
+    dom.maintenanceOverdue.textContent = String(totalOverdueItems.length);
 
-    markOverdueTasks(totalOverdueItems);
-    markDueTasks(totalDueItems);
+    markOverdueTasks(totalOverdueItems.map((item) => item.schedule));
+    markDueTasks(totalDueItems.map((item) => item.schedule));
   },
 };

@@ -6,6 +6,7 @@ export type MaintenanceLog = {
   odo: number | null;
   interval_km: number | null;
   interval_days: number | null;
+  created_at: string;
 };
 
 export type ListMaintenanceLogsResponse = {

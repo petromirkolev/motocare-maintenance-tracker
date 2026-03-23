@@ -34,8 +34,10 @@ async function loadState(): Promise<StoreState> {
   }
 }
 
-async function resetState(): Promise<void> {
-  ((state.bikes = []), (state.maintenance = []), (state.maintenanceLog = []));
+function resetState(): void {
+  state.bikes = [];
+  state.maintenance = [];
+  state.maintenanceLog = [];
 }
 
 function getState(): StoreState {

@@ -61,63 +61,6 @@ maintenanceRouter.post('/log', async (req, res) => {
   }
 
   try {
-    await createMaintenance({
-      bike_id,
-      name: name.trim(),
-      date: date ?? null,
-      odo: odo ?? null,
-      interval_km: interval_km ?? null,
-      interval_days: interval_days ?? null,
-    });
-
-    res.status(201).json({ message: 'Maintenance created successfully' });
-    return;
-  } catch (error) {
-    console.error('Upsert maintenance failed:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-maintenanceRouter.post('/schedule', async (req, res) => {
-  const body = (req.body ?? {}) as UpsertMaintenanceBody;
-  const bike_id = normalizeString(body.bike_id);
-  const name = normalizeString(body.name);
-  const { date, odo, interval_km, interval_days } = body;
-
-  if (!bike_id || !name) {
-    res.status(400).json({ error: 'bike_id and name are required' });
-    return;
-  }
-
-  if (!interval_km) {
-    res.status(400).json({ error: 'interval_km is required' });
-    return;
-  }
-
-  if (!interval_days) {
-    res.status(400).json({ error: 'interval_days is required' });
-    return;
-  }
-
-  if (
-    interval_km !== undefined &&
-    interval_km !== null &&
-    !isPositiveInteger(interval_km)
-  ) {
-    res.status(400).json({ error: 'interval_km must be a positive integer' });
-    return;
-  }
-
-  if (
-    interval_days !== undefined &&
-    interval_days !== null &&
-    !isPositiveInteger(interval_days)
-  ) {
-    res.status(400).json({ error: 'interval_days must be a positive integer' });
-    return;
-  }
-
-  try {
     const existing = await findMaintenanceByBikeAndName(bike_id, name);
 
     if (!existing) {
@@ -130,7 +73,7 @@ maintenanceRouter.post('/schedule', async (req, res) => {
         interval_days: interval_days ?? null,
       });
 
-      res.status(201).json({ message: 'Maintenance scheduled successfully' });
+      res.status(201).json({ message: 'Maintenance created successfully' });
       return;
     }
 
@@ -142,6 +85,71 @@ maintenanceRouter.post('/schedule', async (req, res) => {
       odo: odo ?? existing.odo,
       interval_km: interval_km ?? existing.interval_km,
       interval_days: interval_days ?? existing.interval_days,
+    });
+
+    res.json({ message: 'Maintenance updated successfully' });
+  } catch (error) {
+    console.error('Upsert maintenance failed:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+maintenanceRouter.post('/schedule', async (req, res) => {
+  const body = (req.body ?? {}) as UpsertMaintenanceBody;
+  const bike_id = normalizeString(body.bike_id);
+  const name = normalizeString(body.name);
+  const { interval_km, interval_days } = body;
+
+  if (!bike_id || !name) {
+    res.status(400).json({ error: 'bike_id and name are required' });
+    return;
+  }
+
+  if (interval_km === undefined || interval_km === null) {
+    res.status(400).json({ error: 'interval_km is required' });
+    return;
+  }
+
+  if (interval_days === undefined || interval_days === null) {
+    res.status(400).json({ error: 'interval_days is required' });
+    return;
+  }
+
+  if (!isPositiveInteger(interval_km)) {
+    res.status(400).json({ error: 'interval_km must be a positive integer' });
+    return;
+  }
+
+  if (!isPositiveInteger(interval_days)) {
+    res.status(400).json({ error: 'interval_days must be a positive integer' });
+    return;
+  }
+
+  try {
+    const existing = await findMaintenanceByBikeAndName(bike_id, name);
+
+    if (!existing) {
+      await createMaintenance({
+        bike_id,
+        name: name.trim(),
+        date: null,
+        odo: null,
+        interval_km,
+        interval_days,
+      });
+
+      res.status(201).json({ message: 'Maintenance scheduled successfully' });
+      return;
+    }
+
+    await updateMaintenance({
+      id: existing.id,
+      bike_id,
+      name: name.trim(),
+      date: existing.date,
+      odo: existing.odo,
+      interval_km,
+      interval_days,
     });
 
     res.json({ message: 'Maintenance scheduled successfully' });
