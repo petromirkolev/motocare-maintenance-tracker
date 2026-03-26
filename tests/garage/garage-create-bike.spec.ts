@@ -1,7 +1,7 @@
 import { test } from '../fixtures/garage-fixtures';
 
-test.describe('Garage page test suite', () => {
-  test.describe('Create bike', () => {
+test.describe('Garage create bike', () => {
+  test.describe('Valid data', () => {
     test('Create bike with valid data', async ({
       loggedInUser,
       bikeInput,
@@ -45,7 +45,7 @@ test.describe('Garage page test suite', () => {
         make: 'Yamaha',
         year: '',
       });
-      await garagePage.expectError('Invalid year');
+      await garagePage.expectError('Year is required');
       await garagePage.expectBikeNotVisible('Yamaha');
     });
 
@@ -61,7 +61,9 @@ test.describe('Garage page test suite', () => {
       });
       await garagePage.expectBikeVisible('Yamaha');
     });
+  });
 
+  test.describe('Invalid data', () => {
     test('Create bike with missing all fields', async ({
       loggedInUser,
       bikeInput,
@@ -77,9 +79,7 @@ test.describe('Garage page test suite', () => {
       await garagePage.expectError('Make is required');
       await garagePage.expectBikeNotVisible(bikeInput.make);
     });
-  });
 
-  test.describe('Create bike with invalid data', () => {
     test('Create bike with invalid year < 1900', async ({
       loggedInUser,
       bikeInput,

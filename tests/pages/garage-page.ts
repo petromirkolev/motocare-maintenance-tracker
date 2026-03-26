@@ -122,4 +122,16 @@ export class GaragePage {
   async expectGarageVisible() {
     await expect(this.garageScreen).toBeVisible();
   }
+
+  async expectGarageEmpty() {
+    await expect(
+      this.page.locator('[data-testid="garage-empty"]'),
+    ).toBeVisible();
+    await expect(
+      this.page.locator('[data-testid="garage-empty"] .empty__title'),
+    ).toHaveText('No motorcycles yet');
+    await expect(
+      this.page.locator('[data-testid="garage-empty"] .empty__sub'),
+    ).toHaveText('Add your first bike to start tracking maintenance.');
+  }
 }

@@ -1,5 +1,5 @@
 const { Client } = require('pg');
-require('dotenv').config({ path: 'api/.env' });
+require('dotenv').config({ path: 'api/.env.test' });
 
 async function resetTestDb() {
   if (!process.env.TEST_DATABASE_URL) {
