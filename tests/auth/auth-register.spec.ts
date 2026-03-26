@@ -1,5 +1,4 @@
-import { test, expect } from '@playwright/test';
-import { RegisterPage } from '../pages/register-page';
+import { test, expect } from '../fixtures/auth-fixtures';
 import {
   invalidEmailInput,
   invalidPasswordInput,
@@ -8,87 +7,72 @@ import {
 } from '../utils/test-data';
 
 test.describe('Register page test suite', () => {
-  let registerPage: RegisterPage;
-
-  test.beforeEach(async ({ page }) => {
-    registerPage = new RegisterPage(page);
-    await registerPage.gotoreg();
-  });
-
-  test('User can register with valid credentials', async () => {
-    const email = uniqueEmail();
-    const password = validInput.password;
-
-    await registerPage.register(email, password);
-
+  test('User can register with valid credentials', async ({ registerPage }) => {
+    await registerPage.register(uniqueEmail(), validInput.password);
     await registerPage.expectSuccess('Registration successful!');
   });
 
-  test('User cannot register with same valid credentials', async () => {
-    const email = uniqueEmail();
-    const password = validInput.password;
-
-    await registerPage.register(email, password);
-
-    await registerPage.expectSuccess('Registration successful!');
-
-    await registerPage.clickCancel();
-    await registerPage.gotoreg();
-
-    await registerPage.register(email, password);
+  test('User cannot register with existing credentials', async ({
+    registeredUser,
+    registerPage,
+  }) => {
+    await registerPage.register(registeredUser.email, registeredUser.password);
     await registerPage.expectError('User already exists');
   });
 
-  test('User cannot register without credentials', async () => {
+  test('User cannot submit empty registration form', async ({
+    registerPage,
+  }) => {
+    await registerPage.gotoreg();
     await registerPage.submit();
     await registerPage.expectError('Email is required');
   });
 
-  test('User cannot register without email', async () => {
-    const password = validInput.password;
-
-    await registerPage.register('', password);
+  test('User cannot register without email', async ({ registerPage }) => {
+    await registerPage.register('', validInput.password);
     await registerPage.expectError('Email is required');
   });
 
-  test('User cannot register without password', async () => {
-    const email = uniqueEmail();
-
-    await registerPage.register(email, '');
-
+  test('User cannot register without password', async ({ registerPage }) => {
+    await registerPage.register(uniqueEmail(), '');
     await registerPage.expectError('Password is required');
   });
 
-  test('User cannot register without confirm password', async () => {
-    const email = uniqueEmail();
-
-    await registerPage.fillEmail(email);
+  test('User cannot register without confirm password', async ({
+    registerPage,
+  }) => {
+    await registerPage.gotoreg();
+    await registerPage.fillEmail(uniqueEmail());
     await registerPage.fillPassword(validInput.password);
     await registerPage.fillConfirmPassword('');
     await registerPage.submit();
     await registerPage.expectError('Confirm password is required');
   });
 
-  test('User cannot register with not matching passwords', async () => {
-    const email = uniqueEmail();
-
-    await registerPage.fillEmail(email);
+  test('User cannot register with mismatched passwords', async ({
+    registerPage,
+  }) => {
+    await registerPage.gotoreg();
+    await registerPage.fillEmail(uniqueEmail());
     await registerPage.fillPassword(validInput.password);
     await registerPage.fillConfirmPassword('testingthepass');
     await registerPage.submit();
     await registerPage.expectError('Passwords do not match');
   });
 
-  test('Cancel button loads login page', async () => {
+  test('Cancel returns user to login page', async ({ registerPage }) => {
+    await registerPage.gotoreg();
     await registerPage.clickCancel();
     await expect(registerPage.registerButton).toBeVisible();
   });
 
-  test.describe('Register with invalid email test suite', () => {
+  test.describe('Invalid email', () => {
     for (const key of Object.keys(invalidEmailInput)) {
       const { value, testDescription } = invalidEmailInput[key];
 
-      test(`Register with ${testDescription}`, async () => {
+      test(`Register fails with: ${testDescription}`, async ({
+        registerPage,
+      }) => {
         await registerPage.register(value, validInput.password);
 
         if (value === '    ' || value === '') {
@@ -100,25 +84,21 @@ test.describe('Register page test suite', () => {
     }
   });
 
-  test.describe('Register with invalid password test suite', () => {
+  test.describe('Invalid password', () => {
     for (const key of Object.keys(invalidPasswordInput)) {
       const { value, testDescription } = invalidPasswordInput[key];
-      test(`Invalid password: ${testDescription}`, async () => {
-        const email = uniqueEmail();
-
-        await registerPage.register(email, value);
+      test(`Register fails with: ${testDescription}`, async ({
+        registerPage,
+      }) => {
+        await registerPage.register('invalidpass@test.com', value);
 
         if (value === '' || value === '    ') {
           await registerPage.expectError('Password is required');
-        }
-
-        if (value.length <= 4 && value.trim().length !== 0) {
+        } else if (value.length <= 4 && value.trim().length !== 0) {
           await registerPage.expectError(
             'Password must be 8 characters at minimum',
           );
-        }
-
-        if (value.length > 32 && value.trim().length !== 0) {
+        } else if (value.length > 32 && value.trim().length !== 0) {
           await registerPage.expectError(
             'Password must be 32 characters at maximum',
           );
