@@ -15,7 +15,7 @@ export const test = base.extend<MaintenanceFixtures>({
   logInput: async ({}, use) => {
     const input = {
       doneAt: '2026-03-16',
-      odo: '100',
+      odo: '1000',
     };
 
     await use(input);

@@ -23,6 +23,7 @@ test.describe('Maintenance schedule', () => {
       scheduleInput.km,
     );
     await maintenancePage.expectTaskFieldContains('oil-change', 'due', '100');
+
     await maintenancePage.expectTaskFieldContains('oil-change', 'due', '1000');
   });
 

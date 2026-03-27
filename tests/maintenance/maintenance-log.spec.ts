@@ -6,6 +6,7 @@ test.describe('Maintenance logs', () => {
     maintenancePage,
   }) => {
     await maintenancePage.gotoMaintenance();
+
     await maintenancePage.openMaintenanceLogModal('oil-change');
   });
 
@@ -14,6 +15,8 @@ test.describe('Maintenance logs', () => {
     maintenancePage,
     logInput,
   }) => {
+    await maintenancePage.gotoMaintenance();
+
     await maintenancePage.logMaintenance(
       'oil-change',
       logInput.doneAt,
@@ -22,7 +25,7 @@ test.describe('Maintenance logs', () => {
     await maintenancePage.expectTaskFieldContains(
       'oil-change',
       'last',
-      'March 16, 2026 at 100 km.',
+      'March 16, 2026 at 1000 km.',
     );
   });
 
@@ -32,6 +35,7 @@ test.describe('Maintenance logs', () => {
     logInput,
   }) => {
     await maintenancePage.gotoMaintenance();
+
     await maintenancePage.openMaintenanceLogModal('oil-change');
 
     await maintenancePage.fillMaintenanceLog(logInput.doneAt, logInput.odo);
@@ -50,6 +54,8 @@ test.describe('Maintenance logs', () => {
     maintenancePage,
     logInput,
   }) => {
+    await maintenancePage.gotoMaintenance();
+
     await maintenancePage.logMaintenance(
       'coolant-change',
       logInput.doneAt,
@@ -64,6 +70,8 @@ test.describe('Maintenance logs', () => {
     maintenancePage,
     logInput,
   }) => {
+    await maintenancePage.gotoMaintenance();
+
     await maintenancePage.logMaintenance(
       'oil-change',
       logInput.doneAt,
@@ -72,16 +80,17 @@ test.describe('Maintenance logs', () => {
     await maintenancePage.expectTaskFieldContains(
       'oil-change',
       'last',
-      'March 16, 2026 at 100 km.',
+      'March 16, 2026 at 1000 km.',
     );
 
     await maintenancePage.page.reload();
+
     await maintenancePage.gotoMaintenance();
 
     await maintenancePage.expectTaskFieldContains(
       'oil-change',
       'last',
-      'March 16, 2026 at 100 km.',
+      'March 16, 2026 at 1000 km.',
     );
   });
 
@@ -90,6 +99,8 @@ test.describe('Maintenance logs', () => {
     maintenancePage,
     logInput,
   }) => {
+    await maintenancePage.gotoMaintenance();
+
     await maintenancePage.logMaintenance(
       'oil-change',
       logInput.doneAt,
@@ -98,12 +109,15 @@ test.describe('Maintenance logs', () => {
     await maintenancePage.expectTaskFieldContains(
       'oil-change',
       'last',
-      'March 16, 2026 at 100 km.',
+      'March 16, 2026 at 1000 km.',
     );
 
     await maintenancePage.page.reload();
 
+    await maintenancePage.gotoMaintenance();
+
     await maintenancePage.logMaintenance('oil-change', '2026-03-17', '200');
+
     await maintenancePage.expectTaskFieldContains(
       'oil-change',
       'last',
@@ -116,6 +130,8 @@ test.describe('Maintenance logs', () => {
     maintenancePage,
     logInput,
   }) => {
+    await maintenancePage.gotoMaintenance();
+
     await maintenancePage.logMaintenance(
       'oil-change',
       logInput.doneAt,
@@ -125,17 +141,15 @@ test.describe('Maintenance logs', () => {
     await maintenancePage.expectTaskFieldContains(
       'oil-change',
       'last',
-      'March 16, 2026 at 100 km.',
+      'March 16, 2026 at 1000 km.',
     );
 
-    await maintenancePage.openMaintenanceLogModal('coolant-change');
-    await maintenancePage.fillMaintenanceLog('2026-03-18', '300');
-    await maintenancePage.saveMaintenanceLog();
+    await maintenancePage.logMaintenance('coolant-change', '2026-03-18', '300');
 
     await maintenancePage.expectTaskFieldContains(
       'oil-change',
       'last',
-      'March 16, 2026 at 100 km.',
+      'March 16, 2026 at 1000 km.',
     );
     await maintenancePage.expectTaskFieldContains(
       'coolant-change',
@@ -152,15 +166,14 @@ test.describe('Maintenance logs', () => {
     bikeInput,
   }) => {
     await garagePage.addBike(bikeInput);
+
     await garagePage.expectBikeVisible(bikeInput.make);
 
     const bikeCard = maintenancePage.getBikeCard(bikeInput.make);
 
     await bikeCard.click();
 
-    await maintenancePage.openMaintenanceLogModal('oil-change');
-    await maintenancePage.fillMaintenanceLog('2026-03-16', '100');
-    await maintenancePage.saveMaintenanceLog();
+    await maintenancePage.logMaintenance('oil-change', '2026-03-16', '100');
 
     await maintenancePage.expectTaskFieldContains(
       'oil-change',

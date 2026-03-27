@@ -107,7 +107,6 @@ export class MaintenancePage {
     doneAt: string,
     odo: string,
   ): Promise<void> {
-    await this.gotoMaintenance();
     await this.openMaintenanceLogModal(service);
     await this.fillMaintenanceLog(doneAt, odo);
     await this.saveMaintenanceLog();
