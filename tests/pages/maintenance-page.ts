@@ -1,4 +1,5 @@
 import { Page, Locator, expect } from '@playwright/test';
+import { Bike } from '../types/bike';
 
 export class MaintenancePage {
   readonly page: Page;
@@ -112,9 +113,9 @@ export class MaintenancePage {
     await this.saveMaintenanceLog();
   }
 
-  async openMaintenanceScheduleModal(service: string): Promise<void> {
-    await this.gotoMaintenance();
-
+  async openMaintenanceScheduleModal(
+    service: 'oil-change' | 'coolant-change',
+  ): Promise<void> {
     switch (service) {
       case 'oil-change':
         await this.scheduleOilService.click();
@@ -143,11 +144,11 @@ export class MaintenancePage {
   }
 
   async scheduleMaintenance(
-    taskId: string,
+    service: 'oil-change' | 'coolant-change',
     days: string,
     km: string,
   ): Promise<void> {
-    await this.openMaintenanceScheduleModal(taskId);
+    await this.openMaintenanceScheduleModal(service);
     await this.fillMaintenanceSchedule(days, km);
     await this.saveMaintenanceSchedule();
   }
@@ -165,6 +166,12 @@ export class MaintenancePage {
 
   getTaskField(taskId: string, field: 'last' | 'due'): Locator {
     return this.getTaskCard(taskId).locator(`[data-field="${field}"]`);
+  }
+
+  getBikeCard(make: string): Locator {
+    return this.page.locator('.bikeCard__main').filter({
+      hasText: make,
+    });
   }
 
   async expectTaskFieldContains(
