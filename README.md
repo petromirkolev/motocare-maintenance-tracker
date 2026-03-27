@@ -185,12 +185,12 @@ The project supports three execution modes:
 
 - **Local** - frontend/backend run from source on the machine, PostgreSQL runs in Docker
 - **Docker** - frontend/backend/database all run in Docker
-- **Prod** - tests run against the deployed Render/Neon app
 
 ### Run Playwright locally
 
 ```bash
 npm install
+npm run db:create
 npm run db:up
 npm run test:local
 npm run db:down
@@ -219,24 +219,12 @@ npm run docker:test:down
 
 This runs the Playwright suite against the fully Dockerized app stack, using a separate PostgreSQL test database.
 
-### Run Playwright against Render/Neon
-
-```bash
-npm run test:prod
-```
-
-Other prod commands:
-
-```bash
-npm run test:prod:ui
-```
-
 ## Running locally
 
 MotoCare supports a local development setup where:
 
-- the **API** runs from source on your machine
-- the **frontend** runs from source on your machine
+- **API** runs from source on your machine
+- **frontend** runs from source on your machine
 - **PostgreSQL** runs in Docker
 
 ### Environment files
@@ -247,8 +235,8 @@ Example local development values:
 
 ```text
 PORT=3001
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/motocare_dev
-TEST_DATABASE_URL=postgresql://postgres:postgres@localhost:5432/motocare_test
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/motocare_maintenance_dev
+TEST_DATABASE_URL=postgresql://postgres:postgres@localhost:5432/motocare_maintenance_test
 NODE_ENV=development
 ```
 
@@ -292,8 +280,8 @@ docker compose up --build
 
 ### App URLs
 
-Frontend: http://localhost:4173
-API: http://localhost:3001
+- **Frontend**: http://localhost:4173
+- **API**: http://localhost:3001
 
 ### Stop the containers
 

@@ -14,9 +14,7 @@
     "docker:test:down": "docker compose -f docker-compose.yml -f docker-compose.test.yml down -v",
     "docker:test": "playwright test --config=playwright.docker.config.ts",
     "docker:test:ui": "playwright test --config=playwright.docker.config.ts --ui",
-    "docker:test:fresh": "npm run docker:test:down && npm run docker:test:up && npm run db:test:reset && npm run test:docker",
-    "test:prod": "playwright test --config=playwright.prod.config.ts -- /tests/auth /tests/garage tests/maintenance",
-    "test:prod:ui": "playwright test --config=playwright.prod.config.ts -- /tests/auth /tests/garage tests/maintenance --ui"
+    "docker:test:fresh": "npm run docker:test:down && npm run docker:test:up && npm run db:test:reset && npm run test:docker"
   },
   "repository": {
     "type": "git",
