@@ -4,7 +4,7 @@
   "description": "MotoCare Maintenance Tracker is a small, real-life usable motorcycle maintenance app.",
   "main": "index.js",
   "scripts": {
-    "db:create": "docker exec -it motocare-postgres psql -U postgres -c 'CREATE DATABASE motocare_maintenance_test;'",
+    "db:create": "docker exec -it motocare-maintenance-postgres psql -U postgres -c 'CREATE DATABASE motocare_maintenance_test;'",
     "db:up": "docker compose up -d postgres",
     "db:down": "docker compose stop postgres",
     "db:test:reset": "node tests/scripts/reset-test-db.js",
