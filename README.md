@@ -41,7 +41,7 @@ MotoCare Maintenance Tracker is a lightweight motorcycle maintenance tracker bui
 
 ### Maintenance
 
-For each bike, MotoCare supports built-in maintenance items such as oil change and coolant change.
+For each bike, MotoCare Maintenance Tracker supports built-in maintenance items such as oil change and coolant change.
 
 Users can:
 
@@ -181,7 +181,7 @@ At the time of writing, the suite contains 114 Playwright tests.
 
 Playwright is initialized at the repo root because tests target the whole system, not just the frontend.
 
-The project supports three execution modes:
+The project supports two execution modes:
 
 - **Local** - frontend/backend run from source on the machine, PostgreSQL runs in Docker
 - **Docker** - frontend/backend/database all run in Docker
@@ -221,7 +221,7 @@ This runs the Playwright suite against the fully Dockerized app stack, using a s
 
 ## Running locally
 
-MotoCare supports a local development setup where:
+MotoCare Maintenance Tracker supports a local development setup where:
 
 - **API** runs from source on your machine
 - **frontend** runs from source on your machine
@@ -295,7 +295,7 @@ docker compose down
 **Backend**: Render Web Service
 **Database**: Neon PostgreSQL
 
-This project is deployed as a real full-stack application, not just a static frontend.
+This project is deployed as a real full-stack application.
 
 ## CI
 
