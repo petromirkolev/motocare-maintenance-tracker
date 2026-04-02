@@ -63,7 +63,7 @@ export function makeBike() {
   return {
     make: `Test Bike ${Date.now()}-${Math.floor(Math.random() * 10000)}`,
     model: 'Tracer 9 GT',
-    year: '2021',
-    odometer: '1000',
+    year: 2021,
+    odo: 1000,
   };
 }

@@ -1,8 +1,8 @@
 export type Bike = {
-  make: string;
-  model: string;
-  year: number;
-  odo: number;
+  make?: string;
+  model?: string;
+  year?: number;
+  odo?: number;
 };
 
 export type BikeResponse = {

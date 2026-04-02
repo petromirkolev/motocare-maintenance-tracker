@@ -1,7 +1,12 @@
 import { APIRequestContext, APIResponse, expect } from '@playwright/test';
-import { BikeResponse } from '../types/bike';
+import { Bike, BikeResponse } from '../types/bike';
 import { ValidInput } from '../types/auth';
 import { API_URL } from './constants';
+import {
+  BikeUpdate,
+  MaintenanceLog,
+  MaintenanceSchedule,
+} from '../types/maintenance';
 
 export const api = {
   async registerUser(
@@ -35,20 +40,11 @@ export const api = {
   async createBike(
     request: APIRequestContext,
     user_id: string,
-    overrides: Partial<{
-      make: string;
-      model: string;
-      year: number;
-      odo: number;
-    }> = {},
+    overrides: Partial<Bike> = {},
   ): Promise<APIResponse> {
     const response = await request.post(`${API_URL}/bikes`, {
       data: {
         user_id,
-        make: `Test Bike ${Date.now()}-${Math.floor(Math.random() * 10000)}`,
-        model: 'Tracer 9GT',
-        year: 2021,
-        odo: 1000,
         ...overrides,
       },
     });
@@ -60,25 +56,28 @@ export const api = {
     request: APIRequestContext,
     user_id: string,
     bike_id: string,
-    overrides: Partial<{
-      id: string;
-      make: string;
-      model: string;
-      year: number;
-      odo: number;
-    }>,
+    overrides: Partial<BikeUpdate>,
   ): Promise<APIResponse> {
     const updateResponse = await request.put(`${API_URL}/bikes/${bike_id}`, {
       data: {
         id: bike_id,
         user_id,
-        make: overrides.make,
-        model: overrides.model,
-        year: overrides.year,
-        odo: overrides.odo,
+        ...overrides,
       },
     });
     return updateResponse;
+  },
+
+  async deleteBike(
+    request: APIRequestContext,
+    user_id: string,
+    bike_id: string,
+  ): Promise<APIResponse> {
+    const deleteResponse = await request.delete(
+      `${API_URL}/bikes/${bike_id}?user_id=${user_id}`,
+    );
+
+    return deleteResponse;
   },
 
   async listFirstBike(
@@ -96,19 +95,12 @@ export const api = {
   async logMaintenance(
     request: APIRequestContext,
     bike_id: string,
-    overrides: Partial<{
-      bike_id: string;
-      name: 'oil-change' | 'coolant-change';
-      date: string;
-      odo: number;
-    }>,
+    overrides: Partial<MaintenanceLog>,
   ) {
     const response = await request.post(`${API_URL}/maintenance/log`, {
       data: {
         bike_id,
-        name: overrides.name,
-        date: overrides.date,
-        odo: overrides.odo,
+        ...overrides,
       },
     });
 
@@ -118,11 +110,7 @@ export const api = {
   async scheduleMaintenance(
     request: APIRequestContext,
     bike_id: string,
-    overrides: Partial<{
-      name: 'oil-change' | 'coolant-change';
-      interval_km: number;
-      interval_days: number;
-    }>,
+    overrides: Partial<MaintenanceSchedule>,
   ) {
     const response = await request.post(`${API_URL}/maintenance/schedule`, {
       data: {

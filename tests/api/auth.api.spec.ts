@@ -14,9 +14,9 @@ import {
 test.describe('Auth API test suite', () => {
   test('Register with valid credentials succeeds', async ({
     request,
-    validInput,
+    validUserInput,
   }) => {
-    const response = await api.registerUser(request, validInput);
+    const response = await api.registerUser(request, validUserInput);
     expect(response.status()).toBe(201);
 
     const body = await response.json();
@@ -25,11 +25,11 @@ test.describe('Auth API test suite', () => {
 
   test('Register with duplicate email is rejected', async ({
     request,
-    validInput,
+    validUserInput,
   }) => {
-    await api.registerUser(request, validInput);
+    await api.registerUser(request, validUserInput);
 
-    const duplicateResponse = await api.registerUser(request, validInput);
+    const duplicateResponse = await api.registerUser(request, validUserInput);
     expect(duplicateResponse.status()).toBe(409);
 
     const duplicateBody = await duplicateResponse.json();
@@ -38,12 +38,12 @@ test.describe('Auth API test suite', () => {
 
   test('Register with invalid email is rejected', async ({
     request,
-    validInput,
-    invalidInput,
+    validUserInput,
+    invalidUserInput,
   }) => {
     const response = await api.registerUser(request, {
-      ...validInput,
-      email: invalidInput.email,
+      ...validUserInput,
+      email: invalidUserInput.email,
     });
 
     expect(response.status()).toBe(400);
@@ -54,10 +54,10 @@ test.describe('Auth API test suite', () => {
 
   test('Register with missing email is rejected', async ({
     request,
-    validInput,
+    validUserInput,
   }) => {
     const response = await api.registerUser(request, {
-      ...validInput,
+      ...validUserInput,
       email: undefined,
     });
     expect(response.status()).toBe(400);
@@ -68,10 +68,10 @@ test.describe('Auth API test suite', () => {
 
   test('Register with missing password is rejected', async ({
     request,
-    validInput,
+    validUserInput,
   }) => {
     const response = await api.registerUser(request, {
-      ...validInput,
+      ...validUserInput,
       password: undefined,
     });
     expect(response.status()).toBe(400);
@@ -82,12 +82,12 @@ test.describe('Auth API test suite', () => {
 
   test('Register with short password is rejected', async ({
     request,
-    validInput,
-    invalidInput,
+    validUserInput,
+    invalidUserInput,
   }) => {
     const response = await api.registerUser(request, {
-      ...validInput,
-      password: invalidInput.shortPassword,
+      ...validUserInput,
+      password: invalidUserInput.shortPassword,
     });
     expect(response.status()).toBe(400);
 
@@ -97,12 +97,12 @@ test.describe('Auth API test suite', () => {
 
   test('Register with long password is rejected', async ({
     request,
-    validInput,
-    invalidInput,
+    validUserInput,
+    invalidUserInput,
   }) => {
     const response = await api.registerUser(request, {
-      ...validInput,
-      password: invalidInput.longPassword,
+      ...validUserInput,
+      password: invalidUserInput.longPassword,
     });
     expect(response.status()).toBe(400);
 
@@ -125,11 +125,11 @@ test.describe('Auth API test suite', () => {
   test('Login with wrong password is rejected', async ({
     request,
     registeredUser,
-    invalidInput,
+    invalidUserInput,
   }) => {
     const loginResponse = await api.loginUser(request, {
       ...registeredUser,
-      password: invalidInput.password,
+      password: invalidUserInput.password,
     });
     expect(loginResponse.status()).toBe(401);
 
@@ -140,11 +140,11 @@ test.describe('Auth API test suite', () => {
   test('Login with non existing email is rejected', async ({
     request,
     registeredUser,
-    invalidInput,
+    invalidUserInput,
   }) => {
     const loginResponse = await api.loginUser(request, {
       ...registeredUser,
-      email: invalidInput.email,
+      email: invalidUserInput.email,
     });
     expect(loginResponse.status()).toBe(401);
 
