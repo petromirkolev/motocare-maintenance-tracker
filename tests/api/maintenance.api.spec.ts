@@ -25,7 +25,9 @@ test.describe('Maintenance API test suite', () => {
     expect(jobResponse.status()).toBe(200);
 
     const jobBody = await jobResponse.json();
-    const maintenance = jobBody.maintenance[0];
+    const maintenance = jobBody.maintenance.find(
+      (item: any) => item.name === 'oil-change',
+    );
 
     expect(jobBody.maintenance).toHaveLength(1);
     expect(maintenance.bike_id).toBe(userWithOneBike.bike_id);
@@ -83,7 +85,9 @@ test.describe('Maintenance API test suite', () => {
     expect(bike_1_maintenance.status()).toBe(200);
 
     const bike_1_maintenance_body = await bike_1_maintenance.json();
-    const bike_1_maintenance_records = bike_1_maintenance_body.maintenance[0];
+    const bike_1_maintenance_records = bike_1_maintenance_body.maintenance.find(
+      (item: any) => item.name === 'oil-change',
+    );
 
     expect(bike_1_maintenance_body.maintenance).toHaveLength(1);
     expect(bike_1_maintenance_records.bike_id).toBe(userWithOneBike.bike_id);
@@ -128,8 +132,12 @@ test.describe('Maintenance API test suite', () => {
     expect(maintenanceResponse.status()).toBe(200);
 
     const maintenanceBody = await maintenanceResponse.json();
-    const coolantMaintenance = maintenanceBody.maintenance[0];
-    const oilMaintenance = maintenanceBody.maintenance[1];
+    const coolantMaintenance = maintenanceBody.maintenance.find(
+      (item: any) => item.name === 'coolant-change',
+    );
+    const oilMaintenance = maintenanceBody.maintenance.find(
+      (item: any) => item.name === 'oil-change',
+    );
 
     expect(maintenanceBody.maintenance).toHaveLength(2);
 
@@ -225,6 +233,7 @@ test.describe('Maintenance API test suite', () => {
     });
     const bike_2_body = await bike_2.json();
     const bike_2_id = bike_2_body.bike.id;
+
     const schedule_oil_service_bike_1 = await api.scheduleMaintenance(
       request,
       userWithOneBike.bike_id,
@@ -243,6 +252,7 @@ test.describe('Maintenance API test suite', () => {
 
     const bike_1_records = await bike_1_maintenance.json();
     expect(bike_1_records.maintenance).toHaveLength(1);
+
     expect(bike_1_records.maintenance[0].name).toBe(
       maintenanceScheduleInput.name,
     );
@@ -252,7 +262,7 @@ test.describe('Maintenance API test suite', () => {
       bike_2_id,
       { ...maintenanceScheduleInput, name: 'coolant-change' },
     );
-    expect(schedule_oil_service_bike_1.status()).toBe(201);
+    expect(schedule_coolant_service_bike_2.status()).toBe(201);
 
     const coolant_service_bike_2_body =
       await schedule_coolant_service_bike_2.json();

@@ -57,8 +57,8 @@ test.describe('Maintenance history', () => {
     );
 
     await maintenancePage.logMaintenance({
-      service: 'coolant-change',
-      doneAt: '2026-03-17',
+      name: 'coolant-change',
+      date: '2026-03-17',
       odo: 200,
     });
 

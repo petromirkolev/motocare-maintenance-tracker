@@ -1,4 +1,4 @@
-import { test as base, expect, request } from '@playwright/test';
+import { test as base, expect } from '@playwright/test';
 import {
   invalidInput,
   makeBike,
@@ -79,22 +79,24 @@ export const test = base.extend<ApiFixtures>({
   },
 
   registeredUser: async ({ request, validUserInput }, use) => {
-    await api.registerUser(request, { ...validUserInput });
+    await api.registerUser(request, validUserInput);
 
-    await use({ ...validUserInput });
+    await use(validUserInput);
   },
 
   loggedInUser: async ({ request, registeredUser }, use) => {
-    const response = await api.loginUser(request, { ...registeredUser });
+    const response = await api.loginUser(request, registeredUser);
     const body = await response.json();
 
     await use({ ...registeredUser, user_id: body.user.id });
   },
 
   userWithOneBike: async ({ request, loggedInUser, validBikeInput }, use) => {
-    const response = await api.createBike(request, loggedInUser.user_id, {
-      ...validBikeInput,
-    });
+    const response = await api.createBike(
+      request,
+      loggedInUser.user_id,
+      validBikeInput,
+    );
     const body = await response.json();
 
     await use({ ...loggedInUser, bike_id: body.bike.id });

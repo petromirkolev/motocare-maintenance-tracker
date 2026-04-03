@@ -1,13 +1,13 @@
 export type MaintenanceItem = 'oil-change' | 'coolant-change';
 
 export type MaintenanceLogInput = {
-  service: MaintenanceItem;
-  doneAt: string;
+  name: MaintenanceItem;
+  date: string;
   odo: number;
 };
 
 export type MaintenanceScheduleInput = {
-  service: MaintenanceItem;
+  name: MaintenanceItem;
   interval_km: number;
   interval_days: number;
 };

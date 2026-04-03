@@ -1,6 +1,4 @@
-import { req } from '../../web/src/utils/dom-helper';
 import { InvalidBikeInput, ValidBikeInput } from '../types/bike';
-import { api } from '../utils/api-helpers';
 import { makeBike } from '../utils/test-data';
 import { test as base, expect } from './auth-fixtures';
 

@@ -184,7 +184,7 @@ test.describe('Maintenance schedule', () => {
     );
 
     await maintenancePage.scheduleMaintenance({
-      service: 'coolant-change',
+      name: 'coolant-change',
       interval_days: 400,
       interval_km: 10000,
     });

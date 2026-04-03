@@ -1,5 +1,5 @@
 import { Page, Locator, expect } from '@playwright/test';
-import { InvalidBikeInput, ValidBikeInput } from '../types/bike';
+import { ValidBikeInput } from '../types/bike';
 
 export class GaragePage {
   readonly page: Page;

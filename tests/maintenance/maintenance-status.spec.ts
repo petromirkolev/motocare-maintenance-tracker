@@ -29,7 +29,7 @@ test.describe('Maintenance status', () => {
 
     await maintenancePage.logMaintenance({
       ...logInput,
-      service: 'coolant-change',
+      name: 'coolant-change',
     });
 
     await maintenancePage.expectTaskFieldContains(

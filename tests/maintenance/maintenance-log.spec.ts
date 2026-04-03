@@ -102,8 +102,8 @@ test.describe('Maintenance logs', () => {
     await maintenancePage.gotoMaintenance();
 
     await maintenancePage.logMaintenance({
-      service: 'oil-change',
-      doneAt: '2026-03-17',
+      name: 'oil-change',
+      date: '2026-03-17',
       odo: 200,
     });
 
@@ -130,8 +130,8 @@ test.describe('Maintenance logs', () => {
     );
 
     await maintenancePage.logMaintenance({
-      service: 'coolant-change',
-      doneAt: '2026-03-18',
+      name: 'coolant-change',
+      date: '2026-03-18',
       odo: 300,
     });
 

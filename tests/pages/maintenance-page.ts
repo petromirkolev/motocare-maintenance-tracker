@@ -1,5 +1,4 @@
 import { Page, Locator, expect } from '@playwright/test';
-import { ValidBikeInput } from '../types/bike';
 import {
   MaintenanceItem,
   MaintenanceLogInput,
@@ -93,7 +92,7 @@ export class MaintenancePage {
   }
 
   async fillMaintenanceLog(input: MaintenanceLogInput): Promise<void> {
-    await this.logIntervalDoneAt.fill(input.doneAt);
+    await this.logIntervalDoneAt.fill(input.date);
     await this.logIntervalOdo.fill(String(input.odo));
   }
 
@@ -106,7 +105,7 @@ export class MaintenancePage {
   }
 
   async logMaintenance(input: MaintenanceLogInput): Promise<void> {
-    await this.openMaintenanceLogModal(input.service);
+    await this.openMaintenanceLogModal(input.name);
     await this.fillMaintenanceLog({ ...input });
     await this.saveMaintenanceLog();
   }
@@ -142,7 +141,7 @@ export class MaintenancePage {
   }
 
   async scheduleMaintenance(input: MaintenanceScheduleInput): Promise<void> {
-    await this.openMaintenanceScheduleModal(input.service);
+    await this.openMaintenanceScheduleModal(input.name);
     await this.fillMaintenanceSchedule({ ...input });
     await this.saveMaintenanceSchedule();
   }
