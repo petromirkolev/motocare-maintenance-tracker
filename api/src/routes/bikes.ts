@@ -20,7 +20,7 @@ bikesRouter.get('/', async (req, res) => {
   const user_id = String(req.query.user_id ?? '').trim();
 
   if (!user_id) {
-    res.status(400).json({ error: msg.USER_ID_PARAM });
+    res.status(400).json({ error: msg.PARAM_USER_ID });
     return;
   }
 
@@ -29,7 +29,7 @@ bikesRouter.get('/', async (req, res) => {
     res.json({ bikes });
   } catch (error) {
     console.error(msg.BIKE_LIST_FAIL, error);
-    res.status(500).json({ error: msg.INTERNAL_SERVER_ERROR });
+    res.status(500).json({ error: msg.SYS_ERR_INTERNAL });
   }
 });
 
@@ -59,17 +59,17 @@ bikesRouter.post('/', async (req, res) => {
   }
 
   if (!user_id || !make || !model || year === undefined || odo === undefined) {
-    res.status(400).json({ error: msg.ADD_BIKE_PARAMS });
+    res.status(400).json({ error: msg.PARAM_ADD_BIKE });
     return;
   }
 
   if (!isIntegerInRange(year, 1900, 2100)) {
-    res.status(400).json({ error: msg.BIKE_YEAR_BETWEEN_ERROR });
+    res.status(400).json({ error: msg.BIKE_YEAR_RANGE });
     return;
   }
 
   if (!isNonNegativeInteger(odo)) {
-    res.status(400).json({ error: msg.ODO_NON_NEG });
+    res.status(400).json({ error: msg.PARAM_ODO_NON_NEG });
     return;
   }
 
@@ -82,10 +82,10 @@ bikesRouter.post('/', async (req, res) => {
       odo,
     });
 
-    res.status(201).json({ message: msg.BIKE_CREATE_SUCCESS, bike: { id } });
+    res.status(201).json({ message: msg.BIKE_CREATE_OK, bike: { id } });
   } catch (error) {
     console.error(msg.BIKE_CREATE_FAIL, error);
-    res.status(500).json({ error: msg.INTERNAL_SERVER_ERROR });
+    res.status(500).json({ error: msg.SYS_ERR_INTERNAL });
   }
 });
 
@@ -106,13 +106,13 @@ bikesRouter.put('/:id', async (req, res) => {
     year === undefined ||
     odo === undefined
   ) {
-    res.status(400).json({ error: msg.UPDATE_BIKE_PARAMS });
+    res.status(400).json({ error: msg.PARAM_UPDATE_BIKE });
     return;
   }
 
   if (year !== undefined && (year < 1900 || year > 2100)) {
     {
-      res.status(400).json({ error: msg.BIKE_INVALID_YEAR_ERROR });
+      res.status(400).json({ error: msg.BIKE_YEAR_INVALID });
       return;
     }
   }
@@ -125,7 +125,7 @@ bikesRouter.put('/:id', async (req, res) => {
   }
 
   if (odo < existingBike.odo) {
-    res.status(400).json({ error: msg.BIKE_ODO_DECR_ERROR });
+    res.status(400).json({ error: msg.BIKE_ODO_DECR });
     return;
   }
 
@@ -139,10 +139,10 @@ bikesRouter.put('/:id', async (req, res) => {
       odo: Number(odo),
     });
 
-    res.json({ message: msg.BIKE_UPDATE_SUCCESS });
+    res.json({ message: msg.BIKE_UPDATE_OK });
   } catch (error) {
     console.error(msg.BIKE_UPDATE_FAIL, error);
-    res.status(500).json({ error: msg.INTERNAL_SERVER_ERROR });
+    res.status(500).json({ error: msg.SYS_ERR_INTERNAL });
   }
 });
 
@@ -151,7 +151,7 @@ bikesRouter.delete('/:id', async (req, res) => {
   const user_id = String(req.query.user_id ?? '').trim();
 
   if (!bike_id || !user_id) {
-    res.status(400).json({ error: msg.DELETE_BIKE_PARAMS });
+    res.status(400).json({ error: msg.PARAM_DELETE_BIKE });
     return;
   }
 
@@ -161,10 +161,10 @@ bikesRouter.delete('/:id', async (req, res) => {
       user_id,
     });
 
-    res.json({ message: msg.BIKE_DELETE_SUCCESS });
+    res.json({ message: msg.BIKE_DELETE_OK });
   } catch (error) {
     console.error(msg.BIKE_DELETE_FAIL, error);
-    res.status(500).json({ error: msg.INTERNAL_SERVER_ERROR });
+    res.status(500).json({ error: msg.SYS_ERR_INTERNAL });
   }
 });
 

@@ -19,6 +19,7 @@ import {
   readRegForm,
   setCurrentUser,
 } from '../state/auth-store';
+import { msg } from '../../../constants/constants';
 
 type Action =
   | 'auth.login'
@@ -70,14 +71,14 @@ function bindEvents(): void {
           await initState();
 
           loginForm?.reset();
-          render.errorMessage('Login success, opening garage...', 'auth.login');
+          render.errorMessage(msg.USER_LOG_OK, 'auth.login');
           setTimeout(() => {
             render.garageScreen();
           }, 1000);
         } catch (error) {
           error instanceof Error
             ? render.errorMessage(error.message, action)
-            : render.errorMessage('Something went wrong', action);
+            : render.errorMessage(msg.ERR_INTERNAL, action);
         }
         break;
       }
@@ -93,7 +94,7 @@ function bindEvents(): void {
           const regForm = dom.regForm as HTMLFormElement;
           const input = readRegForm(regForm);
           await registerUser(input.email.toLowerCase(), input.password);
-          render.errorMessage('Registration successful!', 'auth.register');
+          render.errorMessage(msg.USER_REG_OK, 'auth.register');
           regForm?.reset();
           setTimeout(() => {
             render.initialScreen();
@@ -101,7 +102,7 @@ function bindEvents(): void {
         } catch (error) {
           error instanceof Error
             ? render.errorMessage(error.message, action)
-            : render.errorMessage('Something went wrong', action);
+            : render.errorMessage(msg.ERR_INTERNAL, action);
         }
         break;
       }
@@ -125,7 +126,7 @@ function bindEvents(): void {
 
       case 'bike.add.submit': {
         const addBikeForm = (dom.addBikeForm as HTMLFormElement) || null;
-        if (!addBikeForm) throw new Error('Missing add bike form');
+        if (!addBikeForm) throw new Error(msg.ADD_FORM_MISS);
 
         try {
           const input = readBikeForm(addBikeForm);
@@ -143,7 +144,7 @@ function bindEvents(): void {
         } catch (error) {
           error instanceof Error
             ? render.errorMessage(error.message, action)
-            : render.errorMessage('Something went wrong', action);
+            : render.errorMessage(msg.ERR_INTERNAL, action);
         }
         break;
       }
@@ -180,7 +181,7 @@ function bindEvents(): void {
         const editId = dom.editBikeId;
 
         if (!editMake || !editYear || !editModel || !editOdo || !editId) {
-          throw new Error('Edit form inputs missing from DOM');
+          throw new Error(msg.EDIT_INPUTS_MISS);
         }
 
         editId.value = appState.selectedBikeId;
@@ -193,11 +194,11 @@ function bindEvents(): void {
 
       case 'bike.edit.submit': {
         const bikeEditForm = dom.editBikeForm as HTMLFormElement | null;
-        if (!bikeEditForm) throw new Error('Missing edit bike form');
+        if (!bikeEditForm) throw new Error(msg.EDIT_FORM_MISS);
 
         const idInput = dom.editBikeId as HTMLInputElement | null;
         const id = idInput?.value?.trim();
-        if (!id) throw new Error('Missing bike id for edit submit');
+        if (!id) throw new Error(msg.BIKE_ID_REQ);
 
         try {
           const form = readBikeForm(bikeEditForm);
@@ -217,7 +218,7 @@ function bindEvents(): void {
         } catch (error) {
           error instanceof Error
             ? render.errorMessage(error.message, action)
-            : render.errorMessage('Something went wrong', action);
+            : render.errorMessage(msg.ERR_INTERNAL, action);
         }
         break;
       }
@@ -274,10 +275,10 @@ function bindEvents(): void {
             maintenanceStore.readMaintenanceLogForm(maintenanceForm);
 
           const bike_id = appState.selectedBikeId;
-          if (!bike_id) throw new Error('No bike selected');
+          if (!bike_id) throw new Error(msg.BIKE_NOT_SEL);
 
           const currentTask = appState.currentMaintenanceItem;
-          if (!currentTask) throw new Error('No maintenance item selected');
+          if (!currentTask) throw new Error(msg.MAINT_NOT_SEL);
 
           const existingTask = maintenanceStore.getMaintenanceTask(
             bike_id,
@@ -289,10 +290,9 @@ function bindEvents(): void {
             input.date === null ||
             input.date === undefined
           )
-            throw new Error('Date is required');
+            throw new Error(msg.DATE_REQ);
 
-          if (Number(input.odo) < 0)
-            throw new Error('Odo must be a positive number');
+          if (Number(input.odo) < 0) throw new Error(msg.BIKE_ODO_POS);
 
           await logMaintenanceApi({
             bike_id,
@@ -320,7 +320,7 @@ function bindEvents(): void {
         } catch (error) {
           error instanceof Error
             ? render.errorMessage(error.message, action)
-            : render.errorMessage('Something went wrong', action);
+            : render.errorMessage(msg.ERR_INTERNAL, action);
         }
         break;
       }
@@ -344,16 +344,15 @@ function bindEvents(): void {
             maintenanceStore.readMaintenanceScheduleForm(scheduleForm);
 
           if (Number(input.interval_days) <= 0)
-            throw new Error('Interval days must be a positive number');
+            throw new Error(msg.MAINT_DAYS_POS);
 
-          if (Number(input.interval_km) <= 0)
-            throw new Error('Interval kilometers must be a positive number');
+          if (Number(input.interval_km) <= 0) throw new Error(msg.MAINT_KM_POS);
 
           const bike_id = appState.selectedBikeId;
-          if (!bike_id) throw new Error('No bike selected');
+          if (!bike_id) throw new Error(msg.BIKE_NOT_SEL);
 
           const currentTask = appState.currentMaintenanceItem;
-          if (!currentTask) throw new Error('No maintenance item selected');
+          if (!currentTask) throw new Error(msg.MAINT_NOT_SEL);
 
           await scheduleMaintenanceApi({
             bike_id,
@@ -375,7 +374,7 @@ function bindEvents(): void {
         } catch (error) {
           error instanceof Error
             ? render.errorMessage(error.message, action)
-            : render.errorMessage('Something went wrong', action);
+            : render.errorMessage(msg.ERR_INTERNAL, action);
         }
         break;
       }

@@ -1,15 +1,5 @@
-import {
-  FAIL_CREATE_BIKE,
-  FAIL_DELETE_BIKE,
-  FAIL_FETCH_BIKES,
-  FAIL_UPDATE_BIKE,
-  INVALID_ODO,
-  INVALID_YEAR,
-  NO_BIKE,
-  NO_USER,
-  ODO_CANNOT_DECREASE,
-  ODO_REQUIRED,
-} from '../../../constants/constants';
+import { msg } from '../../../constants/constants';
+import { API_BASE_URL } from './base';
 import { getCurrentUser } from '../state/auth-store';
 import { bikeStore } from '../state/bike-store';
 import type {
@@ -18,13 +8,12 @@ import type {
   ErrorResponse,
   CreateBikeResponse,
 } from '../types/bikes';
-import { API_BASE_URL } from './base';
 
 export async function fetchBikes(): Promise<Bike[]> {
   const currentUser = getCurrentUser();
 
   if (!currentUser) {
-    throw new Error(NO_USER);
+    throw new Error(msg.USER_NOT_LOGGED);
   }
 
   const response = await fetch(
@@ -34,7 +23,7 @@ export async function fetchBikes(): Promise<Bike[]> {
   const data = (await response.json()) as ListBikesResponse | ErrorResponse;
 
   if (!response.ok) {
-    throw new Error('error' in data ? data.error : FAIL_FETCH_BIKES);
+    throw new Error('error' in data ? data.error : msg.BIKE_FETCH_ERR);
   }
 
   return (data as ListBikesResponse).bikes;
@@ -48,12 +37,12 @@ export async function createBikeApi(input: {
 }): Promise<CreateBikeResponse> {
   const currentUser = getCurrentUser();
 
-  if (!currentUser) throw new Error(NO_USER);
+  if (!currentUser) throw new Error(msg.USER_NOT_LOGGED);
 
   if (input.year !== undefined && (input.year < 1900 || input.year > 2100))
-    throw new Error(INVALID_YEAR);
+    throw new Error(msg.BIKE_YEAR_RANGE);
 
-  if (input.odo < 0) throw new Error(INVALID_ODO);
+  if (input.odo < 0) throw new Error(msg.BIKE_ODO_POS);
 
   const response = await fetch(`${API_BASE_URL}/bikes`, {
     method: 'POST',
@@ -72,7 +61,7 @@ export async function createBikeApi(input: {
   const data = (await response.json()) as CreateBikeResponse | ErrorResponse;
 
   if (!response.ok) {
-    throw new Error('error' in data ? data.error : FAIL_CREATE_BIKE);
+    throw new Error('error' in data ? data.error : msg.BIKE_CREATE_ERR);
   }
 
   return data as CreateBikeResponse;
@@ -87,22 +76,22 @@ export async function updateBikeApi(input: {
 }): Promise<{ message: string }> {
   const currentUser = getCurrentUser();
   if (!currentUser) {
-    throw new Error(NO_USER);
+    throw new Error(msg.USER_NOT_LOGGED);
   }
 
   const currentBike = bikeStore.getBike(input.id);
-  if (!currentBike) throw new Error(NO_BIKE);
+  if (!currentBike) throw new Error(msg.BIKE_NOT_FOUND);
 
   if (input.year !== undefined && (input.year < 1900 || input.year > 2100)) {
-    throw new Error(INVALID_YEAR);
+    throw new Error(msg.BIKE_YEAR_RANGE);
   }
 
   if (input.odo === 0) {
-    throw new Error(ODO_REQUIRED);
+    throw new Error(msg.BIKE_ODO_REQ);
   }
 
   if (input.odo !== undefined && input.odo < currentBike.odo) {
-    throw new Error(ODO_CANNOT_DECREASE);
+    throw new Error(msg.BIKE_ODO_DECR);
   }
 
   const response = await fetch(
@@ -125,7 +114,7 @@ export async function updateBikeApi(input: {
   const data = (await response.json()) as { message: string } | ErrorResponse;
 
   if (!response.ok) {
-    throw new Error('error' in data ? data.error : FAIL_UPDATE_BIKE);
+    throw new Error('error' in data ? data.error : msg.BIKE_UPDATE_ERR);
   }
 
   return data as { message: string };
@@ -135,7 +124,7 @@ export async function deleteBikeApi(id: string): Promise<{ message: string }> {
   const currentUser = getCurrentUser();
 
   if (!currentUser) {
-    throw new Error(NO_USER);
+    throw new Error(msg.USER_NOT_LOGGED);
   }
 
   const response = await fetch(
@@ -148,7 +137,7 @@ export async function deleteBikeApi(id: string): Promise<{ message: string }> {
   const data = (await response.json()) as { message: string } | ErrorResponse;
 
   if (!response.ok) {
-    throw new Error('error' in data ? data.error : FAIL_DELETE_BIKE);
+    throw new Error('error' in data ? data.error : msg.BIKE_DELETE_ERR);
   }
 
   return data as { message: string };

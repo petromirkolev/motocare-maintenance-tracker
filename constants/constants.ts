@@ -1,49 +1,69 @@
-// API
-export const INTERNAL_SERVER_ERROR = ' Internal Server Error';
-export const REG_FAILED = 'Registration failed';
-export const LOGIN_FAILED = 'Login failed';
-export const NO_USER = 'No logged-in user';
-export const NO_BIKE = 'Bike not found';
-export const FAIL_FETCH_BIKES = 'Failed to fetch bikes';
-export const FAIL_CREATE_BIKE = 'Failed to create bike';
-export const FAIL_UPDATE_BIKE = 'Failed to update bike';
-export const FAIL_DELETE_BIKE = 'Failed to delete bike';
-export const FAIL_FETCH_MAINTENANCE = 'Failed to fetch maintenance';
-export const FAIL_LOG_MAINTENANCE = 'Failed to log maintenance';
-export const FAIL_UPSERT_MAINTENANCE = 'Failed to upsert maintenance';
-export const FAIL_FETCH_MAINTENANCE_LOGS = 'Failed to fetch maintenance logs';
-export const FAIL_CREATE_MAINTENANCE_LOGS = 'Failed to create maintenance log';
-export const INVALID_YEAR = 'Invalid year';
-export const INVALID_ODO = 'Invalid odo';
+export const API_URL = 'http://127.0.0.1:3001';
 
-// Auth
-export const USER_REGISTER_SUCCESS = 'Registration successful';
-export const USER_LOGIN_SUCCESS = 'Login successful';
-export const USER_EXIST = 'User already exists';
-export const INVALID_EMAIL = 'Invalid email format';
-export const EMAIL_PASS_REQUIRED = 'Email and password are required';
-export const EMAIL_REQUIRED = 'Email is required';
-export const PASS_REQUIRED = 'Password is required';
-export const CONFIRM_PASS_REQUIRED = 'Confirm password is required';
-export const PASS_SHORT = 'Password must be 8 characters at minimum';
-export const PASS_LONG = 'Password must be 32 characters at maximum';
-export const PASS_NOT_MATCH = 'Passwords do not match';
-export const INVALID_CREDENTIALS = 'Invalid credentials';
+export const msg = {
+  ERR_INTERNAL: 'Internal Server Error',
 
-// Bike
-export const BIKE_CREATE_SUCCESS = 'Bike created successfully';
-export const BIKE_UPDATE_SUCCESS = 'Bike updated successfully';
-export const BIKE_DELETE_SUCCESS = 'Bike deleted successfully';
-export const YEAR_BETWEEN_ERROR =
-  'Year must be an integer between 1900 and 2100';
-export const ODO_NON_NEGATIVE = 'Odometer must be a non-negative integer';
-export const ODO_CANNOT_DECREASE = 'Odometer cannot decrease';
-export const ODO_REQUIRED = 'Odometer is required';
+  USER_REG_OK: 'Registration successful',
+  USER_REG_ERR: 'Registration failed',
+  USER_LOG_OK: 'Login successful',
+  USER_LOG_ERR: 'Login failed',
+  USER_NOT_LOGGED: 'No logged-in user',
+  USER_EXISTS: 'User already exists',
 
-// Maintenance
-export const MAINTENANCE_CREATE_SUCCESS = 'Maintenance created successfully';
-export const MAINTENANCE_SCHEDULE_SUCCESS =
-  'Maintenance scheduled successfully';
-export const ODO_NEGATIVE_ERROR = 'odo must be a non-negative integer';
-export const INTERVAL_DAYS_REQUIRED = 'interval_days is required';
-export const INTERVAL_KM_REQUIRED = 'interval_km is required';
+  EMAIL_INVALID: 'Invalid email format',
+  EMAIL_REQ: 'Email is required',
+  EMAIL_PASS_REQ: 'Email and password are required',
+
+  PASS_REQ: 'Password is required',
+  PASS_CONF_REQ: 'Confirm password is required',
+  PASS_SHORT: 'Password must be at least 8 characters',
+  PASS_LONG: 'Password must be at most 32 characters',
+  PASS_NO_MATCH: 'Passwords do not match',
+
+  CRED_INVALID: 'Invalid credentials',
+
+  BIKE_FETCH_ERR: 'Failed to fetch bikes',
+  BIKE_CREATE_ERR: 'Failed to create bike',
+  BIKE_UPDATE_ERR: 'Failed to update bike',
+  BIKE_DELETE_ERR: 'Failed to delete bike',
+
+  BIKE_CREATE_OK: 'Bike created successfully',
+  BIKE_UPDATE_OK: 'Bike updated successfully',
+  BIKE_DELETE_OK: 'Bike deleted successfully',
+
+  BIKE_NOT_FOUND: 'Bike not found',
+  BIKE_ID_REQ: 'Missing bike_id',
+  BIKE_NOT_SEL: 'No bike selected',
+
+  BIKE_MAKE_REQ: 'Make is required',
+  BIKE_MODEL_REQ: 'Model is required',
+  BIKE_YEAR_REQ: 'Year is required',
+  BIKE_ODO_REQ: 'Odometer is required',
+
+  BIKE_ODO_NUM: 'Odometer must be a number',
+  BIKE_ODO_POS: 'odo must be a positive integer',
+  BIKE_ODO_DECR: 'Odometer cannot decrease',
+
+  BIKE_YEAR_NUM: 'Year must be a number',
+  BIKE_YEAR_RANGE: 'Year must be an integer between 1900 and 2100',
+
+  MAINT_NOT_SEL: 'No maintenance item selected',
+  MAINT_CREATE_OK: 'Maintenance created successfully',
+  MAINT_SCHED_OK: 'Maintenance scheduled successfully',
+
+  MAINT_DAYS_REQ: 'interval_days are required',
+  MAINT_KM_REQ: 'interval_km is required',
+  MAINT_DAYS_POS: 'interval_days must be a positive integer',
+  MAINT_KM_POS: 'interval_km must be a positive integer',
+
+  MAINT_FETCH_ERR: 'Failed to fetch maintenance',
+  MAINT_UPSERT_ERR: 'Failed to upsert maintenance',
+  MAINT_LOGS_ERR: 'Failed to fetch maintenance logs',
+  MAINT_LOG_CREATE_ERR: 'Failed to create maintenance log',
+
+  DATE_REQ: 'Date is required',
+
+  ADD_FORM_MISS: 'Missing add bike form',
+  EDIT_FORM_MISS: 'Missing edit bike form',
+  EDIT_INPUTS_MISS: 'Edit form inputs missing from DOM',
+};

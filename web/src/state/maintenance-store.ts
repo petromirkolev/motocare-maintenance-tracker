@@ -9,8 +9,8 @@ import {
   getLatestLogForBike,
   getServiceStatusesForBike,
 } from '../utils/service-helper';
-
 import { markDueTasks, markOverdueTasks } from '../utils/dom-helper';
+import { msg } from '../../../constants/constants';
 
 export const maintenanceStore = {
   readMaintenanceLogForm(form: HTMLFormElement): MaintenanceLogInput {
@@ -21,8 +21,8 @@ export const maintenanceStore = {
     const odo = Number(odoRaw);
     console.log(odo);
 
-    if (!date) throw new Error('Date is required');
-    if (odo === null || odo === undefined) throw new Error('Odo is required');
+    if (!date) throw new Error(msg.DATE_REQ);
+    if (odo === null || odo === undefined) throw new Error(msg.BIKE_ODO_REQ);
 
     return { date, odo };
   },
@@ -34,8 +34,8 @@ export const maintenanceStore = {
     const interval_kmRaw: string = String(fd.get('interval_km') ?? '').trim();
     const interval_km = Number(interval_kmRaw);
 
-    if (!interval_days) throw new Error('Interval days are required');
-    if (!interval_km) throw new Error('Interval kilometers are required');
+    if (!interval_days) throw new Error(msg.MAINT_DAYS_REQ);
+    if (!interval_km) throw new Error(msg.MAINT_KM_REQ);
 
     return { interval_days, interval_km };
   },

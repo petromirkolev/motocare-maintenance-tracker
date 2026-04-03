@@ -12,7 +12,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get('/', (_req, res) => {
-  res.json({ message: msg.API_RUNNING });
+  res.json({ message: msg.SYS_API_RUNNING });
 });
 app.use('/auth', authRouter);
 app.use('/bikes', bikesRouter);

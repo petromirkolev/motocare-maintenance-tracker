@@ -1,3 +1,4 @@
+import { msg } from '../../../constants/constants';
 import type { Bike } from '../types/bikes';
 import { getState, setState } from './state-store';
 
@@ -13,11 +14,11 @@ export function readBikeForm(form: HTMLFormElement) {
   const odoRaw: string = String(fd.get('odo') ?? '').trim();
   const odo: number = Number(odoRaw);
 
-  if (!make) throw new Error('Make is required');
-  if (!model) throw new Error('Model is required');
-  if (!year) throw new Error('Year is required');
-  if (!Number.isFinite(year)) throw new Error('Year must be a number');
-  if (!Number.isFinite(odo)) throw new Error('Odometer must be a number');
+  if (!make) throw new Error(msg.BIKE_MAKE_REQ);
+  if (!model) throw new Error(msg.BIKE_MODEL_REQ);
+  if (!year) throw new Error(msg.BIKE_YEAR_REQ);
+  if (!Number.isFinite(year)) throw new Error(msg.BIKE_YEAR_NUM);
+  if (!Number.isFinite(odo)) throw new Error(msg.BIKE_ODO_NUM);
 
   return { make, year, model, odo };
 }

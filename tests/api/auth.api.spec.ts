@@ -1,15 +1,6 @@
 import { test, expect } from '../fixtures/api-fixtures';
 import { api } from '../utils/api-helpers';
-import {
-  EMAIL_PASS_REQUIRED,
-  INVALID_CREDENTIALS,
-  INVALID_EMAIL,
-  USER_LOGIN_SUCCESS,
-  PASS_LONG,
-  PASS_SHORT,
-  USER_EXIST,
-  USER_REGISTER_SUCCESS,
-} from '../../constants/constants';
+import { msg } from '../../constants/constants';
 
 test.describe('Auth API test suite', () => {
   test('Register with valid credentials succeeds', async ({
@@ -20,7 +11,7 @@ test.describe('Auth API test suite', () => {
     expect(response.status()).toBe(201);
 
     const body = await response.json();
-    expect(body.message).toBe(USER_REGISTER_SUCCESS);
+    expect(body.message).toBe(msg.USER_REG_OK);
   });
 
   test('Register with duplicate email is rejected', async ({
@@ -33,7 +24,7 @@ test.describe('Auth API test suite', () => {
     expect(duplicateResponse.status()).toBe(409);
 
     const duplicateBody = await duplicateResponse.json();
-    expect(duplicateBody.error).toBe(USER_EXIST);
+    expect(duplicateBody.error).toBe(msg.USER_EXISTS);
   });
 
   test('Register with invalid email is rejected', async ({
@@ -48,7 +39,7 @@ test.describe('Auth API test suite', () => {
     expect(response.status()).toBe(400);
 
     const body = await response.json();
-    expect(body.error).toBe(INVALID_EMAIL);
+    expect(body.error).toBe(msg.EMAIL_INVALID);
   });
 
   test('Register with missing email is rejected', async ({
@@ -62,7 +53,7 @@ test.describe('Auth API test suite', () => {
     expect(response.status()).toBe(400);
 
     const body = await response.json();
-    expect(body.error).toBe(EMAIL_PASS_REQUIRED);
+    expect(body.error).toBe(msg.EMAIL_PASS_REQ);
   });
 
   test('Register with missing password is rejected', async ({
@@ -76,7 +67,7 @@ test.describe('Auth API test suite', () => {
     expect(response.status()).toBe(400);
 
     const body = await response.json();
-    expect(body.error).toBe(EMAIL_PASS_REQUIRED);
+    expect(body.error).toBe(msg.EMAIL_PASS_REQ);
   });
 
   test('Register with short password is rejected', async ({
@@ -91,7 +82,7 @@ test.describe('Auth API test suite', () => {
     expect(response.status()).toBe(400);
 
     const body = await response.json();
-    expect(body.error).toBe(PASS_SHORT);
+    expect(body.error).toBe(msg.PASS_SHORT);
   });
 
   test('Register with long password is rejected', async ({
@@ -106,7 +97,7 @@ test.describe('Auth API test suite', () => {
     expect(response.status()).toBe(400);
 
     const body = await response.json();
-    expect(body.error).toBe(PASS_LONG);
+    expect(body.error).toBe(msg.PASS_LONG);
   });
 
   test('Login with valid credentials succeeds', async ({
@@ -117,7 +108,7 @@ test.describe('Auth API test suite', () => {
     expect(loginResponse.status()).toBe(200);
 
     const loginBody = await loginResponse.json();
-    expect(loginBody.message).toBe(USER_LOGIN_SUCCESS);
+    expect(loginBody.message).toBe(msg.USER_LOG_OK);
   });
 
   test('Login with wrong password is rejected', async ({
@@ -132,7 +123,7 @@ test.describe('Auth API test suite', () => {
     expect(loginResponse.status()).toBe(401);
 
     const loginBody = await loginResponse.json();
-    expect(loginBody.error).toBe(INVALID_CREDENTIALS);
+    expect(loginBody.error).toBe(msg.CRED_INVALID);
   });
 
   test('Login with non existing email is rejected', async ({
@@ -147,7 +138,7 @@ test.describe('Auth API test suite', () => {
     expect(loginResponse.status()).toBe(401);
 
     const loginBody = await loginResponse.json();
-    expect(loginBody.error).toBe(INVALID_CREDENTIALS);
+    expect(loginBody.error).toBe(msg.CRED_INVALID);
   });
 
   test('Login with missing email is rejected', async ({
@@ -161,7 +152,7 @@ test.describe('Auth API test suite', () => {
     expect(loginResponse.status()).toBe(400);
 
     const loginBody = await loginResponse.json();
-    expect(loginBody.error).toBe(EMAIL_PASS_REQUIRED);
+    expect(loginBody.error).toBe(msg.EMAIL_PASS_REQ);
   });
 
   test('Login with missing password is rejected', async ({
@@ -175,6 +166,6 @@ test.describe('Auth API test suite', () => {
     expect(loginResponse.status()).toBe(400);
 
     const loginBody = await loginResponse.json();
-    expect(loginBody.error).toBe(EMAIL_PASS_REQUIRED);
+    expect(loginBody.error).toBe(msg.EMAIL_PASS_REQ);
   });
 });

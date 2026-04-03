@@ -1,8 +1,5 @@
-import {
-  FAIL_FETCH_MAINTENANCE,
-  FAIL_LOG_MAINTENANCE,
-  FAIL_UPSERT_MAINTENANCE,
-} from '../../../constants/constants';
+import { msg } from '../../../constants/constants';
+import { API_BASE_URL } from './base';
 import type {
   Maintenance,
   LogMaintenanceResponse,
@@ -10,7 +7,6 @@ import type {
   ListMaintenanceResponse,
   ErrorResponse,
 } from '../types/maintenance';
-import { API_BASE_URL } from './base';
 
 export async function fetchMaintenanceByBikeId(
   bike_id: string,
@@ -24,7 +20,7 @@ export async function fetchMaintenanceByBikeId(
     | ErrorResponse;
 
   if (!response.ok) {
-    throw new Error('error' in data ? data.error : FAIL_FETCH_MAINTENANCE);
+    throw new Error('error' in data ? data.error : msg.MAINT_FETCH_ERR);
   }
 
   return (data as ListMaintenanceResponse).maintenance;
@@ -51,7 +47,7 @@ export async function logMaintenanceApi(input: {
     | ErrorResponse;
 
   if (!response.ok) {
-    throw new Error('error' in data ? data.error : FAIL_LOG_MAINTENANCE);
+    throw new Error('error' in data ? data.error : msg.MAINT_LOG_CREATE_ERR);
   }
 
   return data as LogMaintenanceResponse;
@@ -78,7 +74,7 @@ export async function scheduleMaintenanceApi(input: {
     | ErrorResponse;
 
   if (!response.ok) {
-    throw new Error('error' in data ? data.error : FAIL_UPSERT_MAINTENANCE);
+    throw new Error('error' in data ? data.error : msg.MAINT_UPSERT_ERR);
   }
 
   return data as ScheduleMaintenanceResponse;

@@ -17,7 +17,7 @@ maintenanceLogsRouter.get('/', async (req, res) => {
   const bike_id = String(req.query.bike_id ?? '').trim();
 
   if (!bike_id) {
-    res.status(400).json({ error: msg.BIKE_PARAM });
+    res.status(400).json({ error: msg.PARAM_BIKE_ID });
     return;
   }
 
@@ -25,8 +25,8 @@ maintenanceLogsRouter.get('/', async (req, res) => {
     const logs = await listMaintenanceLogsByBikeId(bike_id);
     res.json({ logs });
   } catch (error) {
-    console.error(msg.MAINTENANCE_LOG_LIST_FAIL, error);
-    res.status(500).json({ error: msg.INTERNAL_SERVER_ERROR });
+    console.error(msg.MAINT_LOG_LIST_FAIL, error);
+    res.status(500).json({ error: msg.SYS_ERR_INTERNAL });
   }
 });
 
@@ -38,17 +38,17 @@ maintenanceLogsRouter.post('/', async (req, res) => {
   const { date, odo } = body;
 
   if (!bike_id || !name || !date || odo === undefined) {
-    res.status(400).json({ error: msg.MAINTENANCE_LOG_PARAMS });
+    res.status(400).json({ error: msg.PARAM_MAINT_LOG });
     return;
   }
 
   if (!isValidIsoLikeDate(date)) {
-    res.status(400).json({ error: msg.INVALID_DATE });
+    res.status(400).json({ error: msg.MAINT_DATE_INVALID });
     return;
   }
 
   if (!isNonNegativeInteger(odo)) {
-    res.status(400).json({ error: msg.ODO_NON_NEG });
+    res.status(400).json({ error: msg.PARAM_ODO_NON_NEG });
     return;
   }
 
@@ -60,10 +60,10 @@ maintenanceLogsRouter.post('/', async (req, res) => {
       odo: Number(odo),
     });
 
-    res.status(201).json({ message: msg.MAINTENANCE_LOG_CREATE_SUCCESS });
+    res.status(201).json({ message: msg.MAINT_LOG_CREATE_OK });
   } catch (error) {
-    console.error(msg.MAINTENANCE_LOG_CREATE_FAIL, error);
-    res.status(500).json({ error: msg.INTERNAL_SERVER_ERROR });
+    console.error(msg.MAINT_LOG_CREATE_FAIL, error);
+    res.status(500).json({ error: msg.SYS_ERR_INTERNAL });
   }
 });
 

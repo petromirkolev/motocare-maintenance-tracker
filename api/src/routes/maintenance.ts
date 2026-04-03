@@ -20,7 +20,7 @@ maintenanceRouter.get('/', async (req, res) => {
   const bike_id = String(req.query.bike_id ?? '').trim();
 
   if (!bike_id) {
-    res.status(400).json({ error: msg.BIKE_PARAM });
+    res.status(400).json({ error: msg.PARAM_BIKE_ID });
     return;
   }
 
@@ -28,8 +28,8 @@ maintenanceRouter.get('/', async (req, res) => {
     const maintenance = await listMaintenanceByBikeId(bike_id);
     res.json({ maintenance });
   } catch (error) {
-    console.error(msg.MAINTENANCE_LIST_FAIL, error);
-    res.status(500).json({ error: msg.INTERNAL_SERVER_ERROR });
+    console.error(msg.MAINT_LIST_FAIL, error);
+    res.status(500).json({ error: msg.SYS_ERR_INTERNAL });
   }
 });
 
@@ -40,24 +40,24 @@ maintenanceRouter.post('/log', async (req, res) => {
   const { date, odo, interval_km, interval_days } = body;
 
   if (!bike_id || !name) {
-    res.status(400).json({ error: msg.BIKE_AND_NAME_PARAMS });
+    res.status(400).json({ error: msg.PARAM_BIKE_NAME });
     return;
   }
 
   if (date === undefined && odo === undefined) {
     res.status(400).json({
-      error: msg.MAINTENANCE_LOG_FIELDS,
+      error: msg.MAINT_LOG_FIELDS,
     });
     return;
   }
 
   if (date !== undefined && date !== null && !isValidIsoLikeDate(date)) {
-    res.status(400).json({ error: msg.INVALID_DATE });
+    res.status(400).json({ error: msg.MAINT_DATE_INVALID });
     return;
   }
 
   if (odo !== undefined && odo !== null && !isNonNegativeInteger(odo)) {
-    res.status(400).json({ error: msg.ODO_NON_NEG });
+    res.status(400).json({ error: msg.PARAM_ODO_NON_NEG });
     return;
   }
 
@@ -74,7 +74,7 @@ maintenanceRouter.post('/log', async (req, res) => {
         interval_days: interval_days ?? null,
       });
 
-      res.status(201).json({ message: msg.MAINTENANCE_CREATE_SUCCESS });
+      res.status(201).json({ message: msg.MAINT_CREATE_OK });
       return;
     }
 
@@ -88,10 +88,10 @@ maintenanceRouter.post('/log', async (req, res) => {
       interval_days: interval_days ?? existing.interval_days,
     });
 
-    res.json({ message: msg.MAINTENANCE_UPDATE_SUCCESS });
+    res.json({ message: msg.MAINT_UPDATE_OK });
   } catch (error) {
-    console.error(msg.MAINTENANCE_UPDATE_FAIL, error);
-    res.status(500).json({ error: msg.INTERNAL_SERVER_ERROR });
+    console.error(msg.MAINT_UPDATE_FAIL, error);
+    res.status(500).json({ error: msg.SYS_ERR_INTERNAL });
   }
 });
 
@@ -102,27 +102,27 @@ maintenanceRouter.post('/schedule', async (req, res) => {
   const { interval_km, interval_days } = body;
 
   if (!bike_id || !name) {
-    res.status(400).json({ error: msg.BIKE_AND_NAME_PARAMS });
+    res.status(400).json({ error: msg.PARAM_BIKE_NAME });
     return;
   }
 
   if (interval_km === undefined || interval_km === null) {
-    res.status(400).json({ error: msg.INT_KM_PARAM });
+    res.status(400).json({ error: msg.PARAM_INT_KM });
     return;
   }
 
   if (interval_days === undefined || interval_days === null) {
-    res.status(400).json({ error: msg.INT_DAYS_PARAM });
+    res.status(400).json({ error: msg.PARAM_INT_DAYS });
     return;
   }
 
   if (!isPositiveInteger(interval_km)) {
-    res.status(400).json({ error: msg.INT_KM_POSITIVE });
+    res.status(400).json({ error: msg.PARAM_INT_KM_POS });
     return;
   }
 
   if (!isPositiveInteger(interval_days)) {
-    res.status(400).json({ error: msg.INT_DAYS_POSITIVE });
+    res.status(400).json({ error: msg.PARAM_INT_DAYS_POS });
     return;
   }
 
@@ -139,7 +139,7 @@ maintenanceRouter.post('/schedule', async (req, res) => {
         interval_days,
       });
 
-      res.status(201).json({ message: msg.MAINTENANCE_SCHEDULE_SUCCESS });
+      res.status(201).json({ message: msg.MAINT_SCHED_OK });
       return;
     }
 
@@ -153,10 +153,10 @@ maintenanceRouter.post('/schedule', async (req, res) => {
       interval_days,
     });
 
-    res.json({ message: msg.MAINTENANCE_SCHEDULE_SUCCESS });
+    res.json({ message: msg.MAINT_SCHED_OK });
   } catch (error) {
-    console.error(msg.MAINTENANCE_UPDATE_FAIL, error);
-    res.status(500).json({ error: msg.INTERNAL_SERVER_ERROR });
+    console.error(msg.MAINT_UPDATE_FAIL, error);
+    res.status(500).json({ error: msg.SYS_ERR_INTERNAL });
   }
 });
 

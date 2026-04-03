@@ -1,14 +1,11 @@
-import {
-  FAIL_CREATE_MAINTENANCE_LOGS,
-  FAIL_FETCH_MAINTENANCE_LOGS,
-} from '../../../constants/constants';
+import { msg } from '../../../constants/constants';
+import { API_BASE_URL } from './base';
 import type {
   MaintenanceLog,
   CreateMaintenanceLogResponse,
   ListMaintenanceLogsResponse,
   ErrorResponse,
 } from '../types/maintenance-log';
-import { API_BASE_URL } from './base';
 
 export async function fetchMaintenanceLogsByBikeId(
   bike_id: string,
@@ -22,7 +19,7 @@ export async function fetchMaintenanceLogsByBikeId(
     | ErrorResponse;
 
   if (!response.ok) {
-    throw new Error('error' in data ? data.error : FAIL_FETCH_MAINTENANCE_LOGS);
+    throw new Error('error' in data ? data.error : msg.MAINT_LOGS_ERR);
   }
 
   return (data as ListMaintenanceLogsResponse).logs;
@@ -47,9 +44,7 @@ export async function createMaintenanceLogApi(input: {
     | ErrorResponse;
 
   if (!response.ok) {
-    throw new Error(
-      'error' in data ? data.error : FAIL_CREATE_MAINTENANCE_LOGS,
-    );
+    throw new Error('error' in data ? data.error : msg.MAINT_LOG_CREATE_ERR);
   }
 
   return data as CreateMaintenanceLogResponse;

@@ -1,3 +1,4 @@
+import { msg } from '../../../constants/constants';
 import type { AuthUser } from '../types/auth';
 
 const AUTH_USER_KEY = 'motocaremaintenance.auth.user';
@@ -23,7 +24,6 @@ export function setCurrentUser(user: AuthUser | null): void {
     localStorage.removeItem(AUTH_USER_KEY);
     return;
   }
-
   localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
 }
 
@@ -36,13 +36,13 @@ export function readLoginForm(form: HTMLFormElement) {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
   const email: string = String(fd.get('email') ?? '').trim();
-  if (!email) throw new Error('Email is required');
+  if (!email) throw new Error(msg.EMAIL_REQ);
 
   const emailCheck = emailRegex.test(email);
-  if (!emailCheck) throw new Error('Invalid email format');
+  if (!emailCheck) throw new Error(msg.EMAIL_INVALID);
 
   const password: string = String(fd.get('password') ?? '').trim();
-  if (!password) throw new Error('Password is required');
+  if (!password) throw new Error(msg.PASS_REQ);
 
   return { email, password };
 }
@@ -52,24 +52,21 @@ export function readRegForm(form: HTMLFormElement) {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
   const email: string = String(fd.get('email') ?? '').trim();
-  if (!email) throw new Error('Email is required');
+  if (!email) throw new Error(msg.EMAIL_REQ);
 
   const emailCheck = emailRegex.test(email);
-  if (!emailCheck) throw new Error('Invalid email format');
+  if (!emailCheck) throw new Error(msg.EMAIL_INVALID);
 
   const password: string = String(fd.get('password') ?? '').trim();
-  if (!password) throw new Error('Password is required');
 
-  if (password.length < 8)
-    throw new Error('Password must be 8 characters at minimum');
-
-  if (password.length > 32)
-    throw new Error('Password must be 32 characters at maximum');
+  if (!password) throw new Error(msg.PASS_REQ);
+  if (password.length < 8) throw new Error(msg.PASS_SHORT);
+  if (password.length > 32) throw new Error(msg.PASS_LONG);
 
   const password2: string = String(fd.get('repeat-password') ?? '').trim();
-  if (!password2) throw new Error('Confirm password is required');
 
-  if (password !== password2) throw new Error('Passwords do not match');
+  if (!password2) throw new Error(msg.PASS_CONF_REQ);
+  if (password !== password2) throw new Error(msg.PASS_NO_MATCH);
 
   return { email, password };
 }
