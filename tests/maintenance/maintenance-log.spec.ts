@@ -1,4 +1,6 @@
+import { msg } from '../../constants/constants';
 import { test } from '../fixtures/maintenance-fixtures';
+import { makeBike } from '../utils/test-data';
 
 test.describe('Maintenance logs', () => {
   test('Maintenance log modal is opening', async ({
@@ -6,7 +8,6 @@ test.describe('Maintenance logs', () => {
     maintenancePage,
   }) => {
     await maintenancePage.gotoMaintenance();
-
     await maintenancePage.openMaintenanceLogModal('oil-change');
   });
 
@@ -17,11 +18,7 @@ test.describe('Maintenance logs', () => {
   }) => {
     await maintenancePage.gotoMaintenance();
 
-    await maintenancePage.logMaintenance(
-      'oil-change',
-      logInput.doneAt,
-      logInput.odo,
-    );
+    await maintenancePage.logMaintenance(logInput);
     await maintenancePage.expectTaskFieldContains(
       'oil-change',
       'last',
@@ -38,7 +35,7 @@ test.describe('Maintenance logs', () => {
 
     await maintenancePage.openMaintenanceLogModal('oil-change');
 
-    await maintenancePage.fillMaintenanceLog(logInput.doneAt, logInput.odo);
+    await maintenancePage.fillMaintenanceLog(logInput);
 
     await maintenancePage.cancelMaintenanceLog();
 
@@ -56,13 +53,9 @@ test.describe('Maintenance logs', () => {
   }) => {
     await maintenancePage.gotoMaintenance();
 
-    await maintenancePage.logMaintenance(
-      'coolant-change',
-      logInput.doneAt,
-      '-100',
-    );
+    await maintenancePage.logMaintenance({ ...logInput, odo: -100 });
 
-    await maintenancePage.expectLogError('Odo must be a positive number');
+    await maintenancePage.expectLogError(msg.BIKE_ODO_POS);
   });
 
   test('Page reload preserves maintenance logs', async ({
@@ -72,11 +65,7 @@ test.describe('Maintenance logs', () => {
   }) => {
     await maintenancePage.gotoMaintenance();
 
-    await maintenancePage.logMaintenance(
-      'oil-change',
-      logInput.doneAt,
-      logInput.odo,
-    );
+    await maintenancePage.logMaintenance(logInput);
     await maintenancePage.expectTaskFieldContains(
       'oil-change',
       'last',
@@ -101,11 +90,7 @@ test.describe('Maintenance logs', () => {
   }) => {
     await maintenancePage.gotoMaintenance();
 
-    await maintenancePage.logMaintenance(
-      'oil-change',
-      logInput.doneAt,
-      logInput.odo,
-    );
+    await maintenancePage.logMaintenance(logInput);
     await maintenancePage.expectTaskFieldContains(
       'oil-change',
       'last',
@@ -116,7 +101,11 @@ test.describe('Maintenance logs', () => {
 
     await maintenancePage.gotoMaintenance();
 
-    await maintenancePage.logMaintenance('oil-change', '2026-03-17', '200');
+    await maintenancePage.logMaintenance({
+      service: 'oil-change',
+      doneAt: '2026-03-17',
+      odo: 200,
+    });
 
     await maintenancePage.expectTaskFieldContains(
       'oil-change',
@@ -132,11 +121,7 @@ test.describe('Maintenance logs', () => {
   }) => {
     await maintenancePage.gotoMaintenance();
 
-    await maintenancePage.logMaintenance(
-      'oil-change',
-      logInput.doneAt,
-      logInput.odo,
-    );
+    await maintenancePage.logMaintenance(logInput);
 
     await maintenancePage.expectTaskFieldContains(
       'oil-change',
@@ -144,7 +129,11 @@ test.describe('Maintenance logs', () => {
       'March 16, 2026 at 1000 km.',
     );
 
-    await maintenancePage.logMaintenance('coolant-change', '2026-03-18', '300');
+    await maintenancePage.logMaintenance({
+      service: 'coolant-change',
+      doneAt: '2026-03-18',
+      odo: 300,
+    });
 
     await maintenancePage.expectTaskFieldContains(
       'oil-change',
@@ -163,30 +152,23 @@ test.describe('Maintenance logs', () => {
     garagePage,
     maintenancePage,
     logInput,
-    bikeInput,
   }) => {
-    await garagePage.addBike(bikeInput);
+    const bike = makeBike();
 
-    await garagePage.expectBikeVisible(bikeInput.make);
-
-    const bikeCard = maintenancePage.getBikeCard(bikeInput.make);
-
-    await bikeCard.click();
-
-    await maintenancePage.logMaintenance('oil-change', '2026-03-16', '100');
+    await garagePage.addBike(bike);
+    await garagePage.expectBikeVisible(bike.make);
+    await maintenancePage.getBikeCard(bike.make).click();
+    await maintenancePage.logMaintenance(logInput);
 
     await maintenancePage.expectTaskFieldContains(
       'oil-change',
       'last',
-      'March 16, 2026 at 100 km.',
+      'March 16, 2026 at 1000 km.',
     );
 
     await maintenancePage.page.reload();
 
-    const bike2Card = maintenancePage.getBikeCard(garageWithOneBike.make);
-
-    await bike2Card.click();
-
+    await maintenancePage.getBikeCard(garageWithOneBike.make).click();
     await maintenancePage.expectTaskFieldContains(
       'oil-change',
       'last',

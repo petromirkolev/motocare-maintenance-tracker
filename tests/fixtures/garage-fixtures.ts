@@ -1,34 +1,32 @@
+import { req } from '../../web/src/utils/dom-helper';
+import { InvalidBikeInput, ValidBikeInput } from '../types/bike';
+import { api } from '../utils/api-helpers';
 import { makeBike } from '../utils/test-data';
 import { test as base, expect } from './auth-fixtures';
 
 type GarageFixtures = {
-  bikeInput: {
-    make: string;
-    model: string;
-    year: string;
-    odometer: string;
-  };
-  garageWithOneBike: {
-    make: string;
-    model: string;
-    year: string;
-    odometer: string;
-  };
+  validBikeInput: ValidBikeInput;
+  invalidBikeInput: InvalidBikeInput;
+  garageWithOneBike: ValidBikeInput;
 };
 
 export const test = base.extend<GarageFixtures>({
-  bikeInput: async ({}, use) => {
-    const bike = makeBike();
-    await use(bike);
+  validBikeInput: async ({}, use) => {
+    await use(makeBike());
   },
 
-  garageWithOneBike: async ({ loggedInUser, garagePage }, use) => {
-    const bike = makeBike();
+  invalidBikeInput: async ({}, use) => {
+    await use({ yearAbove: 2101, yearBelow: 1899, odo: -100 });
+  },
 
-    await garagePage.addBike(bike);
-    await garagePage.expectBikeVisible(bike.make);
+  garageWithOneBike: async (
+    { validBikeInput, loggedInUser, garagePage },
+    use,
+  ) => {
+    await garagePage.addBike(validBikeInput);
+    await garagePage.expectBikeVisible(validBikeInput.make);
 
-    await use(bike);
+    await use(validBikeInput);
   },
 });
 

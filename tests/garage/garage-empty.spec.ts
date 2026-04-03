@@ -10,13 +10,13 @@ test.describe('Garage empty state', () => {
 
   test('Garage shows empty state when all bikes are deleted', async ({
     loggedInUser,
-    bikeInput,
+    validBikeInput,
     garagePage,
   }) => {
-    await garagePage.addBike(bikeInput);
-    await garagePage.expectBikeVisible(bikeInput.make);
-    await garagePage.deleteBikeByName(bikeInput.make);
-    await garagePage.expectBikeNotVisible(bikeInput.make);
+    await garagePage.addBike(validBikeInput);
+    await garagePage.expectBikeVisible(validBikeInput.make);
+    await garagePage.deleteBikeByName(validBikeInput.make);
+    await garagePage.expectBikeNotVisible(validBikeInput.make);
     await garagePage.expectGarageEmpty();
   });
 });

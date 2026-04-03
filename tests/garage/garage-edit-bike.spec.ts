@@ -1,21 +1,18 @@
+import { msg } from '../../constants/constants';
 import { test, expect } from '../fixtures/garage-fixtures';
 
 test.describe('Garage edit bike', () => {
   test('Edit bike with valid data updates the bike', async ({
     garageWithOneBike,
+    validBikeInput,
     garagePage,
   }) => {
-    await garagePage.editBike({
-      make: 'Yamaha',
-      model: 'Tracer 9GT',
-      year: '2022',
-      odometer: '1100',
-    });
+    await garagePage.editBike({ ...validBikeInput, make: 'Honda' });
 
     await expect(garagePage.garageGrid).toBeVisible();
     await expect(garagePage.editBikeScreen).not.toBeVisible();
 
-    await garagePage.expectBikeVisible('Yamaha');
+    await garagePage.expectBikeVisible('Honda');
     await garagePage.expectBikeNotVisible(garageWithOneBike.make);
   });
 
@@ -37,39 +34,54 @@ test.describe('Garage edit bike', () => {
 
   test('Edit bike with invalid year < 1900 renders an error message', async ({
     garageWithOneBike,
+    invalidBikeInput,
     garagePage,
   }) => {
-    await garagePage.editBike({ ...garageWithOneBike, year: '1899' });
-    await garagePage.expectEditError('Invalid year');
+    await garagePage.editBike({
+      ...garageWithOneBike,
+      year: invalidBikeInput.yearBelow,
+    });
+    await garagePage.expectEditError(msg.BIKE_YEAR_RANGE);
 
     await garagePage.cancelEditBike();
 
-    await expect(garagePage.garageGrid).toContainText(garageWithOneBike.year);
+    await expect(garagePage.garageGrid).toContainText(
+      String(garageWithOneBike.year),
+    );
   });
 
   test('Edit bike with invalid year > 2100 renders an error message', async ({
     garageWithOneBike,
+    invalidBikeInput,
     garagePage,
   }) => {
-    await garagePage.editBike({ ...garageWithOneBike, year: '2101' });
-    await garagePage.expectEditError('Invalid year');
+    await garagePage.editBike({
+      ...garageWithOneBike,
+      year: invalidBikeInput.yearAbove,
+    });
+    await garagePage.expectEditError(msg.BIKE_YEAR_RANGE);
 
     await garagePage.cancelEditBike();
 
-    await expect(garagePage.garageGrid).toContainText(garageWithOneBike.year);
+    await expect(garagePage.garageGrid).toContainText(
+      String(garageWithOneBike.year),
+    );
   });
 
   test('Edit bike with decreasing odometer renders an error message', async ({
     garageWithOneBike,
     garagePage,
   }) => {
-    await garagePage.editBike({ ...garageWithOneBike, odometer: '800' });
-    await garagePage.expectEditError('Odometer cannot decrease');
+    await garagePage.editBike({
+      ...garageWithOneBike,
+      odo: garageWithOneBike.odo - 100,
+    });
+    await garagePage.expectEditError(msg.BIKE_ODO_DECR);
 
     await garagePage.cancelEditBike();
 
     await expect(garagePage.garageGrid).toContainText(
-      garageWithOneBike.odometer,
+      String(garageWithOneBike.odo),
     );
   });
 
@@ -83,9 +95,11 @@ test.describe('Garage edit bike', () => {
 
     await expect(garagePage.garageGrid).toContainText('Updated make');
     await expect(garagePage.garageGrid).toContainText(garageWithOneBike.model);
-    await expect(garagePage.garageGrid).toContainText(garageWithOneBike.year);
     await expect(garagePage.garageGrid).toContainText(
-      garageWithOneBike.odometer,
+      String(garageWithOneBike.year),
+    );
+    await expect(garagePage.garageGrid).toContainText(
+      String(garageWithOneBike.odo),
     );
   });
 
@@ -98,9 +112,11 @@ test.describe('Garage edit bike', () => {
     await garagePage.expectBikeVisible(garageWithOneBike.make);
 
     await expect(garagePage.garageGrid).toContainText('Updated model');
-    await expect(garagePage.garageGrid).toContainText(garageWithOneBike.year);
     await expect(garagePage.garageGrid).toContainText(
-      garageWithOneBike.odometer,
+      String(garageWithOneBike.year),
+    );
+    await expect(garagePage.garageGrid).toContainText(
+      String(garageWithOneBike.odo),
     );
   });
 
@@ -109,7 +125,7 @@ test.describe('Garage edit bike', () => {
     garagePage,
   }) => {
     await garagePage.editBike({ ...garageWithOneBike, make: '' });
-    await garagePage.expectEditError('Make is required');
+    await garagePage.expectEditError(msg.BIKE_MAKE_REQ);
 
     await garagePage.cancelEditBike();
 
@@ -121,7 +137,7 @@ test.describe('Garage edit bike', () => {
     garagePage,
   }) => {
     await garagePage.editBike({ ...garageWithOneBike, model: '' });
-    await garagePage.expectEditError('Model is required');
+    await garagePage.expectEditError(msg.BIKE_MODEL_REQ);
 
     await garagePage.cancelEditBike();
 
@@ -132,8 +148,8 @@ test.describe('Garage edit bike', () => {
     garageWithOneBike,
     garagePage,
   }) => {
-    await garagePage.editBike({ ...garageWithOneBike, year: '' });
-    await garagePage.expectEditError('Year is required');
+    await garagePage.editBike({ ...garageWithOneBike, year: Number('') });
+    await garagePage.expectEditError(msg.BIKE_YEAR_REQ);
 
     await garagePage.cancelEditBike();
 
@@ -144,13 +160,13 @@ test.describe('Garage edit bike', () => {
     garageWithOneBike,
     garagePage,
   }) => {
-    await garagePage.editBike({ ...garageWithOneBike, odometer: '' });
-    await garagePage.expectEditError('Odometer is required');
+    await garagePage.editBike({ ...garageWithOneBike, odo: Number('') });
+    await garagePage.expectEditError(msg.BIKE_ODO_REQ);
 
     await garagePage.cancelEditBike();
 
     await expect(garagePage.garageGrid).toContainText(
-      garageWithOneBike.odometer,
+      String(garageWithOneBike.odo),
     );
   });
 });

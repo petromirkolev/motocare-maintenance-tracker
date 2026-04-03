@@ -20,29 +20,23 @@ export const test = base.extend<AuthFixtures>({
   },
 
   invalidUserInput: async ({}, use) => {
-    const { email, password, shortPassword, longPassword } = invalidInput;
-    await use({ email, password, shortPassword, longPassword });
+    await use(invalidInput);
   },
 
   registeredUser: async ({ request, validUserInput }, use) => {
     await api.registerUser(request, { ...validUserInput });
-    await use({ ...validUserInput });
+
+    await use(validUserInput);
   },
 
-  loggedInUser: async (
-    { request, registeredUser, registerPage, loginPage, garagePage },
-    use,
-  ) => {
-    await api.loginUser(request, { ...registeredUser });
+  loggedInUser: async ({ registeredUser, loginPage, garagePage }, use) => {
+    await loginPage.gotologin();
+    await expect(loginPage.loginScreen).toBeVisible();
 
-    await use({ ...registeredUser });
+    await loginPage.login(registeredUser);
+    await garagePage.expectGarageVisible();
 
-    // await expect(loginPage.loginScreen).toBeVisible();
-
-    // await loginPage.login(user.email, user.password);
-    // await garagePage.expectGarageVisible();
-
-    // await use(user);
+    await use(registeredUser);
   },
 });
 

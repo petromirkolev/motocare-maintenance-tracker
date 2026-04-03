@@ -1,31 +1,20 @@
+import {
+  MaintenanceLogInput,
+  MaintenanceScheduleInput,
+} from '../types/maintenance';
 import { test as base, expect } from './garage-fixtures';
 
 type MaintenanceFixtures = {
-  logInput: {
-    doneAt: string;
-    odo: string;
-  };
-  scheduleInput: {
-    days: string;
-    km: string;
-  };
+  logInput: MaintenanceLogInput;
+  scheduleInput: MaintenanceScheduleInput;
 };
 
 export const test = base.extend<MaintenanceFixtures>({
   logInput: async ({}, use) => {
-    const input = {
-      doneAt: '2026-03-16',
-      odo: '1000',
-    };
-
-    await use(input);
+    await use({ service: 'oil-change', doneAt: '2026-03-16', odo: 1000 });
   },
   scheduleInput: async ({}, use) => {
-    const input = {
-      days: '100',
-      km: '1000',
-    };
-    await use(input);
+    await use({ service: 'oil-change', interval_days: 100, interval_km: 1000 });
   },
 });
 

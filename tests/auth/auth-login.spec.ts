@@ -1,11 +1,5 @@
 import { test } from '../fixtures/auth-fixtures';
-import {
-  EMAIL_REQUIRED,
-  INVALID_CREDENTIALS,
-  INVALID_EMAIL,
-  LOGIN_SUCCESS_UI,
-  PASS_REQUIRED,
-} from '../utils/constants';
+import { msg } from '../../constants/constants';
 import { invalidEmailInput, invalidPasswordInput } from '../utils/test-data';
 
 test.describe('Login page test suite', () => {
@@ -15,7 +9,7 @@ test.describe('Login page test suite', () => {
     garagePage,
   }) => {
     await loginPage.login(registeredUser);
-    await loginPage.expectLoginSuccess(LOGIN_SUCCESS_UI);
+    await loginPage.expectLoginSuccess(msg.USER_LOG_OK);
     await garagePage.expectGarageVisible();
   });
 
@@ -24,7 +18,7 @@ test.describe('Login page test suite', () => {
     validUserInput,
   }) => {
     await loginPage.login(validUserInput);
-    await loginPage.expectLoginError(INVALID_CREDENTIALS);
+    await loginPage.expectLoginError(msg.CRED_INVALID);
   });
 
   test('Login with missing email', async ({ loginPage, validUserInput }) => {
@@ -32,12 +26,12 @@ test.describe('Login page test suite', () => {
       ...validUserInput,
       email: undefined,
     });
-    await loginPage.expectLoginError(EMAIL_REQUIRED);
+    await loginPage.expectLoginError(msg.EMAIL_REQ);
   });
 
   test('Login with missing password', async ({ loginPage, validUserInput }) => {
     await loginPage.login({ ...validUserInput, password: undefined });
-    await loginPage.expectLoginError(PASS_REQUIRED);
+    await loginPage.expectLoginError(msg.PASS_REQ);
   });
 
   for (const key of Object.keys(invalidEmailInput) as Array<
@@ -52,9 +46,9 @@ test.describe('Login page test suite', () => {
       await loginPage.login({ ...validUserInput, email: value });
 
       if (value === '    ' || value === '') {
-        await loginPage.expectLoginError(EMAIL_REQUIRED);
+        await loginPage.expectLoginError(msg.EMAIL_REQ);
       } else {
-        await loginPage.expectLoginError(INVALID_EMAIL);
+        await loginPage.expectLoginError(msg.EMAIL_INVALID);
       }
     });
   }
@@ -71,9 +65,9 @@ test.describe('Login page test suite', () => {
       await loginPage.login({ ...validUserInput, password: value });
 
       if (value === '    ' || value === '') {
-        await loginPage.expectLoginError(PASS_REQUIRED);
+        await loginPage.expectLoginError(msg.PASS_REQ);
       } else {
-        await loginPage.expectLoginError(INVALID_CREDENTIALS);
+        await loginPage.expectLoginError(msg.CRED_INVALID);
       }
     });
   }

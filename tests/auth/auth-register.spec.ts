@@ -1,15 +1,5 @@
 import { test, expect } from '../fixtures/auth-fixtures';
-import {
-  CONFIRM_PASS_REQUIRED,
-  EMAIL_REQUIRED,
-  INVALID_EMAIL,
-  PASS_LONG,
-  PASS_NOT_MATCH,
-  PASS_REQUIRED,
-  PASS_SHORT,
-  USER_REGISTER_SUCCESS,
-  USER_EXIST,
-} from '../../constants/constants';
+import { msg } from '../../constants/constants';
 import { invalidEmailInput, invalidPasswordInput } from '../utils/test-data';
 
 test.describe('Register page test suite', () => {
@@ -18,7 +8,7 @@ test.describe('Register page test suite', () => {
     validUserInput,
   }) => {
     await registerPage.register(validUserInput);
-    await registerPage.expectSuccess(USER_REGISTER_SUCCESS);
+    await registerPage.expectSuccess(msg.USER_REG_OK);
   });
 
   test('User cannot register with existing credentials', async ({
@@ -26,7 +16,7 @@ test.describe('Register page test suite', () => {
     registerPage,
   }) => {
     await registerPage.register(registeredUser);
-    await registerPage.expectError(USER_EXIST);
+    await registerPage.expectError(msg.USER_EXISTS);
   });
 
   test('User cannot submit empty registration form', async ({
@@ -34,7 +24,7 @@ test.describe('Register page test suite', () => {
   }) => {
     await registerPage.gotoreg();
     await registerPage.submit();
-    await registerPage.expectError(EMAIL_REQUIRED);
+    await registerPage.expectError(msg.EMAIL_REQ);
   });
 
   test('User cannot register without email', async ({
@@ -42,7 +32,7 @@ test.describe('Register page test suite', () => {
     validUserInput,
   }) => {
     await registerPage.register({ ...validUserInput, email: undefined });
-    await registerPage.expectError(EMAIL_REQUIRED);
+    await registerPage.expectError(msg.EMAIL_REQ);
   });
 
   test('User cannot register without password', async ({
@@ -50,7 +40,7 @@ test.describe('Register page test suite', () => {
     validUserInput,
   }) => {
     await registerPage.register({ ...validUserInput, password: undefined });
-    await registerPage.expectError(PASS_REQUIRED);
+    await registerPage.expectError(msg.PASS_REQ);
   });
 
   test('User cannot register without confirm password', async ({
@@ -61,7 +51,7 @@ test.describe('Register page test suite', () => {
       ...validUserInput,
       confirmPassword: undefined,
     });
-    await registerPage.expectError(CONFIRM_PASS_REQUIRED);
+    await registerPage.expectError(msg.PASS_CONF_REQ);
   });
 
   test('User cannot register with mismatched passwords', async ({
@@ -73,7 +63,7 @@ test.describe('Register page test suite', () => {
       ...validUserInput,
       confirmPassword: invalidUserInput.password,
     });
-    await registerPage.expectError(PASS_NOT_MATCH);
+    await registerPage.expectError(msg.PASS_NO_MATCH);
   });
 
   test('Cancel returns user to login page', async ({ registerPage }) => {
@@ -95,9 +85,9 @@ test.describe('Register page test suite', () => {
         await registerPage.register({ ...validUserInput, email: value });
 
         if (value === '    ' || value === '') {
-          await registerPage.expectError(EMAIL_REQUIRED);
+          await registerPage.expectError(msg.EMAIL_REQ);
         } else {
-          await registerPage.expectError(INVALID_EMAIL);
+          await registerPage.expectError(msg.EMAIL_INVALID);
         }
       });
     }
@@ -115,11 +105,11 @@ test.describe('Register page test suite', () => {
         await registerPage.register({ ...validUserInput, password: value });
 
         if (value === '' || value === '    ') {
-          await registerPage.expectError(PASS_REQUIRED);
+          await registerPage.expectError(msg.PASS_REQ);
         } else if (value.length <= 4 && value.trim().length !== 0) {
-          await registerPage.expectError(PASS_SHORT);
+          await registerPage.expectError(msg.PASS_SHORT);
         } else if (value.length > 32 && value.trim().length !== 0) {
-          await registerPage.expectError(PASS_LONG);
+          await registerPage.expectError(msg.PASS_LONG);
         }
       });
     }

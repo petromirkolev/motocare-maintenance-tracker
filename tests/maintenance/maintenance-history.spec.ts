@@ -1,4 +1,5 @@
 import { expect, test } from '../fixtures/maintenance-fixtures';
+import { makeBike } from '../utils/test-data';
 
 test.describe('Maintenance history', () => {
   test('Maintenance history is empty when no maintenance logs are saved', async ({
@@ -23,11 +24,7 @@ test.describe('Maintenance history', () => {
       'No service history yet',
     );
 
-    await maintenancePage.logMaintenance(
-      'oil-change',
-      logInput.doneAt,
-      logInput.odo,
-    );
+    await maintenancePage.logMaintenance(logInput);
 
     await maintenancePage.expectTaskFieldContains(
       'oil-change',
@@ -51,11 +48,7 @@ test.describe('Maintenance history', () => {
       'No service history yet',
     );
 
-    await maintenancePage.logMaintenance(
-      'oil-change',
-      logInput.doneAt,
-      logInput.odo,
-    );
+    await maintenancePage.logMaintenance(logInput);
 
     await maintenancePage.expectTaskFieldContains(
       'oil-change',
@@ -63,7 +56,11 @@ test.describe('Maintenance history', () => {
       'March 16, 2026 at 1000 km.',
     );
 
-    await maintenancePage.logMaintenance('coolant-change', '2026-03-17', '200');
+    await maintenancePage.logMaintenance({
+      service: 'coolant-change',
+      doneAt: '2026-03-17',
+      odo: 200,
+    });
 
     await maintenancePage.expectTaskFieldContains(
       'coolant-change',
@@ -91,11 +88,7 @@ test.describe('Maintenance history', () => {
       'No service history yet',
     );
 
-    await maintenancePage.logMaintenance(
-      'oil-change',
-      logInput.doneAt,
-      logInput.odo,
-    );
+    await maintenancePage.logMaintenance(logInput);
 
     await maintenancePage.expectTaskFieldContains(
       'oil-change',
@@ -118,24 +111,17 @@ test.describe('Maintenance history', () => {
 
   test('History log of bike A does not appear in bike B', async ({
     garageWithOneBike,
-    bikeInput,
     logInput,
     maintenancePage,
     garagePage,
   }) => {
-    await garagePage.addBike(bikeInput);
+    const bike = makeBike();
+    await garagePage.addBike(bike);
+    await garagePage.expectBikeVisible(bike.make);
 
-    await garagePage.expectBikeVisible(bikeInput.make);
+    await maintenancePage.getBikeCard(bike.make).click();
 
-    const bikeCard = maintenancePage.getBikeCard(bikeInput.make);
-
-    await bikeCard.click();
-
-    await maintenancePage.logMaintenance(
-      'oil-change',
-      logInput.doneAt,
-      logInput.odo,
-    );
+    await maintenancePage.logMaintenance(logInput);
 
     await maintenancePage.expectTaskFieldContains(
       'oil-change',
@@ -149,9 +135,7 @@ test.describe('Maintenance history', () => {
 
     await maintenancePage.page.reload();
 
-    const bike2Card = maintenancePage.getBikeCard(garageWithOneBike.make);
-
-    await bike2Card.click();
+    await maintenancePage.getBikeCard(garageWithOneBike.make).click();
 
     await expect(maintenancePage.maintenanceHistoryContainer).toContainText(
       'No service history yet',

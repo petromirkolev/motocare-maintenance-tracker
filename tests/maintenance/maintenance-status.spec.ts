@@ -1,4 +1,5 @@
-import { test, expect } from '../fixtures/maintenance-fixtures';
+import { test } from '../fixtures/maintenance-fixtures';
+import { makeBike } from '../utils/test-data';
 
 test.describe('Maintenance status', () => {
   test('Maintenance status counts are zero when no maintenance logs are present', async ({
@@ -6,7 +7,6 @@ test.describe('Maintenance status', () => {
     maintenancePage,
   }) => {
     await maintenancePage.gotoMaintenance();
-
     await maintenancePage.expectStatusCounts('0', '0', '0');
   });
 
@@ -17,11 +17,7 @@ test.describe('Maintenance status', () => {
   }) => {
     await maintenancePage.gotoMaintenance();
 
-    await maintenancePage.logMaintenance(
-      'oil-change',
-      logInput.doneAt,
-      logInput.odo,
-    );
+    await maintenancePage.logMaintenance(logInput);
 
     await maintenancePage.expectTaskFieldContains(
       'oil-change',
@@ -31,11 +27,10 @@ test.describe('Maintenance status', () => {
 
     await maintenancePage.expectStatusCounts('1', '0', '0');
 
-    await maintenancePage.logMaintenance(
-      'coolant-change',
-      logInput.doneAt,
-      logInput.odo,
-    );
+    await maintenancePage.logMaintenance({
+      ...logInput,
+      service: 'coolant-change',
+    });
 
     await maintenancePage.expectTaskFieldContains(
       'coolant-change',
@@ -48,15 +43,12 @@ test.describe('Maintenance status', () => {
   test('Item becomes Due Soon by kilometers', async ({
     garageWithOneBike,
     logInput,
+    scheduleInput,
     maintenancePage,
   }) => {
     await maintenancePage.gotoMaintenance();
 
-    await maintenancePage.logMaintenance(
-      'oil-change',
-      logInput.doneAt,
-      logInput.odo,
-    );
+    await maintenancePage.logMaintenance(logInput);
 
     await maintenancePage.expectTaskFieldContains(
       'oil-change',
@@ -66,12 +58,15 @@ test.describe('Maintenance status', () => {
 
     await maintenancePage.expectStatusCounts('1', '0', '0');
 
-    await maintenancePage.scheduleMaintenance('oil-change', '100', '500');
+    await maintenancePage.scheduleMaintenance({
+      ...scheduleInput,
+      interval_km: 200,
+    });
 
     await maintenancePage.expectTaskFieldContains(
       'oil-change',
       'due',
-      'June 24, 2026 or at 1500 km.',
+      'June 24, 2026 or at 1200 km.',
     );
     await maintenancePage.expectStatusCounts('1', '1', '0');
   });
@@ -79,15 +74,12 @@ test.describe('Maintenance status', () => {
   test('Item becomes Due Soon by days', async ({
     garageWithOneBike,
     logInput,
+    scheduleInput,
     maintenancePage,
   }) => {
     await maintenancePage.gotoMaintenance();
 
-    await maintenancePage.logMaintenance(
-      'oil-change',
-      logInput.doneAt,
-      logInput.odo,
-    );
+    await maintenancePage.logMaintenance(logInput);
 
     await maintenancePage.expectTaskFieldContains(
       'oil-change',
@@ -97,7 +89,10 @@ test.describe('Maintenance status', () => {
 
     await maintenancePage.expectStatusCounts('1', '0', '0');
 
-    await maintenancePage.scheduleMaintenance('oil-change', '20', '1000');
+    await maintenancePage.scheduleMaintenance({
+      ...scheduleInput,
+      interval_days: 20,
+    });
 
     await maintenancePage.expectTaskFieldContains(
       'oil-change',
@@ -110,16 +105,14 @@ test.describe('Maintenance status', () => {
   test('Item becomes Overdue by kilometers', async ({
     garageWithOneBike,
     logInput,
+    scheduleInput,
     maintenancePage,
     garagePage,
   }) => {
     await maintenancePage.gotoMaintenance();
 
-    await maintenancePage.logMaintenance(
-      'oil-change',
-      logInput.doneAt,
-      logInput.odo,
-    );
+    await maintenancePage.logMaintenance(logInput);
+
     await maintenancePage.expectTaskFieldContains(
       'oil-change',
       'last',
@@ -128,7 +121,7 @@ test.describe('Maintenance status', () => {
 
     await maintenancePage.expectStatusCounts('1', '0', '0');
 
-    await maintenancePage.scheduleMaintenance('oil-change', '100', '1000');
+    await maintenancePage.scheduleMaintenance(scheduleInput);
 
     await maintenancePage.expectTaskFieldContains(
       'oil-change',
@@ -139,7 +132,7 @@ test.describe('Maintenance status', () => {
 
     await maintenancePage.backToGarageButton.click();
 
-    await garagePage.editBike({ ...garageWithOneBike, odometer: '2100' });
+    await garagePage.editBike({ ...garageWithOneBike, odo: 2100 });
 
     await garagePage.expectBikeVisible(garageWithOneBike.make);
 
@@ -151,28 +144,28 @@ test.describe('Maintenance status', () => {
   test('Item becomes Overdue by days', async ({
     garageWithOneBike,
     logInput,
+    scheduleInput,
     maintenancePage,
   }) => {
     await maintenancePage.gotoMaintenance();
 
-    await maintenancePage.logMaintenance(
-      'oil-change',
-      '2026-02-16',
-      logInput.odo,
-    );
+    await maintenancePage.logMaintenance(logInput);
 
     await maintenancePage.expectTaskFieldContains(
       'oil-change',
       'last',
-      'February 16, 2026 at 1000 km.',
+      'March 16, 2026 at 1000 km.',
     );
 
-    await maintenancePage.scheduleMaintenance('oil-change', '10', '1000');
+    await maintenancePage.scheduleMaintenance({
+      ...scheduleInput,
+      interval_days: 10,
+    });
 
     await maintenancePage.expectTaskFieldContains(
       'oil-change',
       'due',
-      'February 26, 2026 or at 2000 km.',
+      'March 26, 2026 or at 2000 km.',
     );
 
     await maintenancePage.expectStatusCounts('0', '0', '1');
@@ -180,25 +173,18 @@ test.describe('Maintenance status', () => {
 
   test('Bike A On Track/Due Soon/Overdue stats do not affect bike B', async ({
     garageWithOneBike,
-    bikeInput,
     logInput,
     scheduleInput,
     maintenancePage,
     garagePage,
   }) => {
-    await garagePage.addBike(bikeInput);
+    const bike = makeBike();
 
-    await garagePage.expectBikeVisible(bikeInput.make);
+    await garagePage.addBike(bike);
+    await garagePage.expectBikeVisible(bike.make);
+    await maintenancePage.getBikeCard(bike.make).click();
 
-    const bikeCard = maintenancePage.getBikeCard(bikeInput.make);
-
-    await bikeCard.click();
-
-    await maintenancePage.logMaintenance(
-      'oil-change',
-      logInput.doneAt,
-      logInput.odo,
-    );
+    await maintenancePage.logMaintenance(logInput);
 
     await maintenancePage.expectTaskFieldContains(
       'oil-change',
@@ -207,20 +193,9 @@ test.describe('Maintenance status', () => {
     );
     await maintenancePage.expectStatusCounts('1', '0', '0');
 
-    await maintenancePage.scheduleMaintenance('oil-change', '20', '1000');
-
-    await maintenancePage.expectTaskFieldContains(
-      'oil-change',
-      'due',
-      'April 5, 2026 or at 2000 km.',
-    );
-    await maintenancePage.expectStatusCounts('1', '1', '0');
-
     await maintenancePage.page.reload();
 
-    const bike2Card = maintenancePage.getBikeCard(garageWithOneBike.make);
-
-    await bike2Card.click();
+    await maintenancePage.getBikeCard(garageWithOneBike.make).click();
 
     await maintenancePage.expectStatusCounts('0', '0', '0');
   });

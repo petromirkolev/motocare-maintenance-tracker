@@ -1,5 +1,10 @@
 import { Page, Locator, expect } from '@playwright/test';
-import { Bike } from '../types/bike';
+import { ValidBikeInput } from '../types/bike';
+import {
+  MaintenanceItem,
+  MaintenanceLogInput,
+  MaintenanceScheduleInput,
+} from '../types/maintenance';
 
 export class MaintenancePage {
   readonly page: Page;
@@ -71,9 +76,7 @@ export class MaintenancePage {
     await expect(this.maintenanceScreen).toBeVisible();
   }
 
-  async openMaintenanceLogModal(
-    service: 'oil-change' | 'coolant-change',
-  ): Promise<void> {
+  async openMaintenanceLogModal(service: MaintenanceItem): Promise<void> {
     switch (service) {
       case 'oil-change':
         await this.logOilService.click();
@@ -89,9 +92,9 @@ export class MaintenancePage {
     await expect(this.maintenanceLogModal).toBeVisible();
   }
 
-  async fillMaintenanceLog(doneAt: string, odo: string): Promise<void> {
-    await this.logIntervalDoneAt.fill(doneAt);
-    await this.logIntervalOdo.fill(odo);
+  async fillMaintenanceLog(input: MaintenanceLogInput): Promise<void> {
+    await this.logIntervalDoneAt.fill(input.doneAt);
+    await this.logIntervalOdo.fill(String(input.odo));
   }
 
   async saveMaintenanceLog(): Promise<void> {
@@ -102,19 +105,13 @@ export class MaintenancePage {
     await this.logCancelButton.click();
   }
 
-  async logMaintenance(
-    service: 'oil-change' | 'coolant-change',
-    doneAt: string,
-    odo: string,
-  ): Promise<void> {
-    await this.openMaintenanceLogModal(service);
-    await this.fillMaintenanceLog(doneAt, odo);
+  async logMaintenance(input: MaintenanceLogInput): Promise<void> {
+    await this.openMaintenanceLogModal(input.service);
+    await this.fillMaintenanceLog({ ...input });
     await this.saveMaintenanceLog();
   }
 
-  async openMaintenanceScheduleModal(
-    service: 'oil-change' | 'coolant-change',
-  ): Promise<void> {
+  async openMaintenanceScheduleModal(service: MaintenanceItem): Promise<void> {
     switch (service) {
       case 'oil-change':
         await this.scheduleOilService.click();
@@ -129,9 +126,11 @@ export class MaintenancePage {
     await expect(this.maintenanceScheduleModal).toBeVisible();
   }
 
-  async fillMaintenanceSchedule(days: string, km: string): Promise<void> {
-    await this.scheduleIntervalKm.fill(km);
-    await this.scheduleIntervalDays.fill(days);
+  async fillMaintenanceSchedule(
+    input: MaintenanceScheduleInput,
+  ): Promise<void> {
+    await this.scheduleIntervalKm.fill(String(input.interval_km));
+    await this.scheduleIntervalDays.fill(String(input.interval_days));
   }
 
   async saveMaintenanceSchedule(): Promise<void> {
@@ -142,13 +141,9 @@ export class MaintenancePage {
     await this.scheduleCancelButton.click();
   }
 
-  async scheduleMaintenance(
-    service: 'oil-change' | 'coolant-change',
-    days: string,
-    km: string,
-  ): Promise<void> {
-    await this.openMaintenanceScheduleModal(service);
-    await this.fillMaintenanceSchedule(days, km);
+  async scheduleMaintenance(input: MaintenanceScheduleInput): Promise<void> {
+    await this.openMaintenanceScheduleModal(input.service);
+    await this.fillMaintenanceSchedule({ ...input });
     await this.saveMaintenanceSchedule();
   }
 

@@ -1,4 +1,5 @@
 import { Page, Locator, expect } from '@playwright/test';
+import { InvalidBikeInput, ValidBikeInput } from '../types/bike';
 
 export class GaragePage {
   readonly page: Page;
@@ -61,21 +62,27 @@ export class GaragePage {
     await expect(this.editBikeScreen).toBeVisible();
   }
 
-  async addBike({ make, model, year, odometer }): Promise<void> {
+  async addBike(input: Partial<ValidBikeInput>): Promise<void> {
     await this.openAddBike();
-    await this.addBikeMake.fill(make);
-    await this.addBikeModel.fill(model);
-    await this.addBikeYear.fill(year);
-    await this.addBikeOdo.fill(odometer);
+
+    if (input.make !== undefined) await this.addBikeMake.fill(input.make);
+    if (input.model !== undefined) await this.addBikeModel.fill(input.model);
+    if (input.year !== undefined)
+      await this.addBikeYear.fill(String(input.year));
+    if (input.odo !== undefined) await this.addBikeOdo.fill(String(input.odo));
+
     await this.submitAddBike();
   }
 
-  async editBike({ make, model, year, odometer }): Promise<void> {
+  async editBike(input: ValidBikeInput): Promise<void> {
     await this.openEditBike();
-    await this.editBikeMake.fill(make);
-    await this.editBikeModel.fill(model);
-    await this.editBikeYear.fill(year);
-    await this.editBikeOdo.fill(odometer);
+
+    if (input.make !== undefined) await this.editBikeMake.fill(input.make);
+    if (input.model !== undefined) await this.editBikeModel.fill(input.model);
+    if (input.year !== undefined)
+      await this.editBikeYear.fill(String(input.year));
+    if (input.odo !== undefined) await this.editBikeOdo.fill(String(input.odo));
+
     await this.submitEditBike();
   }
 

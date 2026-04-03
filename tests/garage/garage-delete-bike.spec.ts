@@ -11,10 +11,10 @@ test.describe('Garage delete bike', () => {
 
   test('Deleting one bike keeps the other bikes visible', async ({
     garageWithOneBike,
-    bikeInput,
+    validBikeInput,
     garagePage,
   }) => {
-    const bike2 = { ...bikeInput, make: 'Honda', model: 'Rebel' };
+    const bike2 = { ...validBikeInput, make: 'Honda', model: 'Rebel' };
 
     await garagePage.addBike(bike2);
     await garagePage.expectBikeVisible(bike2.make);

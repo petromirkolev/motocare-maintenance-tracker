@@ -1,4 +1,6 @@
+import { msg } from '../../constants/constants';
 import { expect, test } from '../fixtures/maintenance-fixtures';
+import { makeBike } from '../utils/test-data';
 
 test.describe('Maintenance schedule', () => {
   test('User can open maintenance schedule modal', async ({
@@ -6,7 +8,6 @@ test.describe('Maintenance schedule', () => {
     maintenancePage,
   }) => {
     await maintenancePage.gotoMaintenance();
-
     await maintenancePage.openMaintenanceScheduleModal('oil-change');
   });
 
@@ -17,13 +18,9 @@ test.describe('Maintenance schedule', () => {
   }) => {
     await maintenancePage.gotoMaintenance();
 
-    await maintenancePage.scheduleMaintenance(
-      'oil-change',
-      scheduleInput.days,
-      scheduleInput.km,
-    );
-    await maintenancePage.expectTaskFieldContains('oil-change', 'due', '100');
+    await maintenancePage.scheduleMaintenance(scheduleInput);
 
+    await maintenancePage.expectTaskFieldContains('oil-change', 'due', '100');
     await maintenancePage.expectTaskFieldContains('oil-change', 'due', '1000');
   });
 
@@ -34,13 +31,12 @@ test.describe('Maintenance schedule', () => {
   }) => {
     await maintenancePage.gotoMaintenance();
 
-    await maintenancePage.scheduleMaintenance(
-      'oil-change',
-      '',
-      scheduleInput.km,
-    );
+    await maintenancePage.scheduleMaintenance({
+      ...scheduleInput,
+      interval_days: Number(''),
+    });
 
-    await maintenancePage.expectScheduleError('Interval days are required');
+    await maintenancePage.expectScheduleError(msg.MAINT_DAYS_POS);
   });
 
   test('Maintenance schedule with missing kilometers is rejected', async ({
@@ -50,15 +46,12 @@ test.describe('Maintenance schedule', () => {
   }) => {
     await maintenancePage.gotoMaintenance();
 
-    await maintenancePage.scheduleMaintenance(
-      'oil-change',
-      scheduleInput.days,
-      '',
-    );
+    await maintenancePage.scheduleMaintenance({
+      ...scheduleInput,
+      interval_km: Number(''),
+    });
 
-    await maintenancePage.expectScheduleError(
-      'Interval kilometers are required',
-    );
+    await maintenancePage.expectScheduleError(msg.MAINT_KM_REQ);
   });
 
   test('Maintenance schedule with missing days and kilometers is rejected', async ({
@@ -68,9 +61,13 @@ test.describe('Maintenance schedule', () => {
   }) => {
     await maintenancePage.gotoMaintenance();
 
-    await maintenancePage.scheduleMaintenance('oil-change', '', '');
+    await maintenancePage.scheduleMaintenance({
+      ...scheduleInput,
+      interval_days: Number(''),
+      interval_km: Number(''),
+    });
 
-    await maintenancePage.expectScheduleError('Interval days are required');
+    await maintenancePage.expectScheduleError(msg.MAINT_KM_REQ);
   });
 
   test('Maintenance schedule with 0 days is rejected', async ({
@@ -80,15 +77,12 @@ test.describe('Maintenance schedule', () => {
   }) => {
     await maintenancePage.gotoMaintenance();
 
-    await maintenancePage.scheduleMaintenance(
-      'oil-change',
-      '0',
-      scheduleInput.km,
-    );
+    await maintenancePage.scheduleMaintenance({
+      ...scheduleInput,
+      interval_days: 0,
+    });
 
-    await maintenancePage.expectScheduleError(
-      'Interval days must be a positive number',
-    );
+    await maintenancePage.expectScheduleError(msg.MAINT_DAYS_POS);
   });
 
   test('Maintenance schedule with 0 kilometers is rejected', async ({
@@ -98,15 +92,12 @@ test.describe('Maintenance schedule', () => {
   }) => {
     await maintenancePage.gotoMaintenance();
 
-    await maintenancePage.scheduleMaintenance(
-      'oil-change',
-      scheduleInput.days,
-      '0',
-    );
+    await maintenancePage.scheduleMaintenance({
+      ...scheduleInput,
+      interval_km: 0,
+    });
 
-    await maintenancePage.expectScheduleError(
-      'Interval kilometers are required',
-    );
+    await maintenancePage.expectScheduleError(msg.MAINT_KM_REQ);
   });
 
   test('Maintenance schedule with negative kilometers is rejected', async ({
@@ -116,15 +107,12 @@ test.describe('Maintenance schedule', () => {
   }) => {
     await maintenancePage.gotoMaintenance();
 
-    await maintenancePage.scheduleMaintenance(
-      'oil-change',
-      scheduleInput.days,
-      '-100',
-    );
+    await maintenancePage.scheduleMaintenance({
+      ...scheduleInput,
+      interval_km: -100,
+    });
 
-    await maintenancePage.expectScheduleError(
-      'Interval kilometers must be a positive number',
-    );
+    await maintenancePage.expectScheduleError(msg.MAINT_KM_POS);
   });
 
   test('Maintenance schedule with negative days is rejected', async ({
@@ -134,15 +122,12 @@ test.describe('Maintenance schedule', () => {
   }) => {
     await maintenancePage.gotoMaintenance();
 
-    await maintenancePage.scheduleMaintenance(
-      'oil-change',
-      '-100',
-      scheduleInput.km,
-    );
+    await maintenancePage.scheduleMaintenance({
+      ...scheduleInput,
+      interval_days: -100,
+    });
 
-    await maintenancePage.expectScheduleError(
-      'Interval days must be a positive number',
-    );
+    await maintenancePage.expectScheduleError(msg.MAINT_DAYS_POS);
   });
 
   test('Canceling maintenance schedule does not change UI', async ({
@@ -151,13 +136,9 @@ test.describe('Maintenance schedule', () => {
     scheduleInput,
   }) => {
     await maintenancePage.gotoMaintenance();
-
     await maintenancePage.openMaintenanceScheduleModal('oil-change');
 
-    await maintenancePage.fillMaintenanceSchedule(
-      scheduleInput.days,
-      scheduleInput.km,
-    );
+    await maintenancePage.fillMaintenanceSchedule(scheduleInput);
     await maintenancePage.cancelMaintenanceSchedule();
 
     await expect(
@@ -175,11 +156,7 @@ test.describe('Maintenance schedule', () => {
   }) => {
     await maintenancePage.gotoMaintenance();
 
-    await maintenancePage.scheduleMaintenance(
-      'oil-change',
-      scheduleInput.days,
-      scheduleInput.km,
-    );
+    await maintenancePage.scheduleMaintenance(scheduleInput);
 
     await maintenancePage.expectTaskFieldContains('oil-change', 'due', '100');
     await maintenancePage.expectTaskFieldContains('oil-change', 'due', '1000');
@@ -198,11 +175,7 @@ test.describe('Maintenance schedule', () => {
   }) => {
     await maintenancePage.gotoMaintenance();
 
-    await maintenancePage.scheduleMaintenance(
-      'oil-change',
-      scheduleInput.days,
-      scheduleInput.km,
-    );
+    await maintenancePage.scheduleMaintenance(scheduleInput);
 
     await maintenancePage.expectTaskFieldContains(
       'oil-change',
@@ -210,7 +183,11 @@ test.describe('Maintenance schedule', () => {
       'Every 100 days or 1000 km',
     );
 
-    await maintenancePage.scheduleMaintenance('coolant-change', '400', '10000');
+    await maintenancePage.scheduleMaintenance({
+      service: 'coolant-change',
+      interval_days: 400,
+      interval_km: 10000,
+    });
 
     await maintenancePage.expectTaskFieldContains(
       'oil-change',
@@ -228,31 +205,22 @@ test.describe('Maintenance schedule', () => {
     garageWithOneBike,
     garagePage,
     maintenancePage,
-    bikeInput,
     scheduleInput,
   }) => {
-    await garagePage.addBike(bikeInput);
+    const bike = makeBike();
 
-    await garagePage.expectBikeVisible(bikeInput.make);
+    await garagePage.addBike(bike);
+    await garagePage.expectBikeVisible(bike.make);
 
-    const bikeCard = maintenancePage.getBikeCard(garageWithOneBike.make);
+    await maintenancePage.getBikeCard(garageWithOneBike.make).click();
 
-    await bikeCard.click();
-
-    await maintenancePage.scheduleMaintenance(
-      'oil-change',
-      scheduleInput.days,
-      scheduleInput.km,
-    );
+    await maintenancePage.scheduleMaintenance(scheduleInput);
     await maintenancePage.expectTaskFieldContains('oil-change', 'due', '100');
     await maintenancePage.expectTaskFieldContains('oil-change', 'due', '1000');
 
     await maintenancePage.page.reload();
 
-    const bike2Card = maintenancePage.getBikeCard(bikeInput.make);
-
-    await bike2Card.click();
-
+    await maintenancePage.getBikeCard(bike.make).click();
     await maintenancePage.expectTaskFieldContains(
       'oil-change',
       'due',
