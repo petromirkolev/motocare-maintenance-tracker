@@ -7,7 +7,7 @@ import {
   INVALID_YEAR,
   ODO_CANNOT_DECREASE,
   ODO_ERROR,
-} from '../utils/constants';
+} from '../../constants/constants';
 
 test.describe('Garage API test suite', () => {
   test('Create bike with valid data succeeds', async ({

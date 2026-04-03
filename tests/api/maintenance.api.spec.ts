@@ -6,7 +6,7 @@ import {
   MAINTENANCE_CREATE_SUCCESS,
   MAINTENANCE_SCHEDULE_SUCCESS,
   ODO_NEGATIVE_ERROR,
-} from '../utils/constants';
+} from '../../constants/constants';
 
 test.describe('Maintenance API test suite', () => {
   test('Maintenance log with valid date/odo succeeds', async ({

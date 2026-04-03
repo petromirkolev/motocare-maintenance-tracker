@@ -1,9 +1,10 @@
 import { Pool } from 'pg';
+import { msg } from './constants/constants';
 
 const connectionString = process.env.DATABASE_URL;
 
 if (!connectionString) {
-  throw new Error('DATABASE_URL is required');
+  throw new Error(msg.DB_URL_REQ);
 }
 
 export const db = new Pool({

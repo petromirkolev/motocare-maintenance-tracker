@@ -1,9 +1,0 @@
-export const INVALID_CREDENTIALS_ERROR = 'Invalid credentials';
-export const INVALID_EMAIL_FORMAT_ERROR = 'Invalid email format';
-export const PASS_SHORT_ERROR = 'Password must be at least 8 characters';
-export const PASS_LONG_ERROR = 'Password must be 32 characters at most';
-export const MISSING_AUTH_FIELDS_ERROR = 'Email and password are required';
-export const USER_ALREADY_EXISTS_ERROR = 'User already exists';
-export const INTERNAL_SERVER_ERROR = 'Internal server error';
-export const REGISTER_SUCCESS_MESSAGE = 'Registration successful';
-export const LOGIN_SUCCESS_MESSAGE = 'Login successful';

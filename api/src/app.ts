@@ -4,6 +4,7 @@ import bikesRouter from './routes/bikes';
 import maintenanceRouter from './routes/maintenance';
 import maintenanceLogsRouter from './routes/maintenance-log';
 import cors from 'cors';
+import { msg } from './constants/constants';
 
 const app = express();
 
@@ -11,7 +12,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get('/', (_req, res) => {
-  res.json({ message: 'MotoCare Maintenance Tracker API is running' });
+  res.json({ message: msg.API_RUNNING });
 });
 app.use('/auth', authRouter);
 app.use('/bikes', bikesRouter);

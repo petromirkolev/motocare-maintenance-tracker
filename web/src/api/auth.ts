@@ -4,6 +4,7 @@ import type {
   LoginResponse,
 } from '../types/auth';
 import { API_BASE_URL } from './base';
+import { LOGIN_FAILED, REG_FAILED } from '../../../constants/constants';
 
 export async function registerUser(
   email: string,
@@ -20,7 +21,7 @@ export async function registerUser(
   const data = (await response.json()) as RegisterResponse | ErrorResponse;
 
   if (!response.ok) {
-    throw new Error('error' in data ? data.error : 'Registration failed');
+    throw new Error('error' in data ? data.error : REG_FAILED);
   }
 
   return data as RegisterResponse;
@@ -41,7 +42,7 @@ export async function loginUser(
   const data = (await response.json()) as LoginResponse | ErrorResponse;
 
   if (!response.ok) {
-    throw new Error('error' in data ? data.error : 'Login failed');
+    throw new Error('error' in data ? data.error : LOGIN_FAILED);
   }
 
   return data as LoginResponse;

@@ -1,6 +1,20 @@
 // API
-export const API_URL = 'http://127.0.0.1:3001';
 export const INTERNAL_SERVER_ERROR = ' Internal Server Error';
+export const REG_FAILED = 'Registration failed';
+export const LOGIN_FAILED = 'Login failed';
+export const NO_USER = 'No logged-in user';
+export const NO_BIKE = 'Bike not found';
+export const FAIL_FETCH_BIKES = 'Failed to fetch bikes';
+export const FAIL_CREATE_BIKE = 'Failed to create bike';
+export const FAIL_UPDATE_BIKE = 'Failed to update bike';
+export const FAIL_DELETE_BIKE = 'Failed to delete bike';
+export const FAIL_FETCH_MAINTENANCE = 'Failed to fetch maintenance';
+export const FAIL_LOG_MAINTENANCE = 'Failed to log maintenance';
+export const FAIL_UPSERT_MAINTENANCE = 'Failed to upsert maintenance';
+export const FAIL_FETCH_MAINTENANCE_LOGS = 'Failed to fetch maintenance logs';
+export const FAIL_CREATE_MAINTENANCE_LOGS = 'Failed to create maintenance log';
+export const INVALID_YEAR = 'Invalid year';
+export const INVALID_ODO = 'Invalid odo';
 
 // Auth
 export const USER_REGISTER_SUCCESS = 'Registration successful';
@@ -20,9 +34,11 @@ export const INVALID_CREDENTIALS = 'Invalid credentials';
 export const BIKE_CREATE_SUCCESS = 'Bike created successfully';
 export const BIKE_UPDATE_SUCCESS = 'Bike updated successfully';
 export const BIKE_DELETE_SUCCESS = 'Bike deleted successfully';
-export const INVALID_YEAR = 'Year must be an integer between 1900 and 2100';
-export const ODO_ERROR = 'Odometer must be a non-negative integer';
+export const YEAR_BETWEEN_ERROR =
+  'Year must be an integer between 1900 and 2100';
+export const ODO_NON_NEGATIVE = 'Odometer must be a non-negative integer';
 export const ODO_CANNOT_DECREASE = 'Odometer cannot decrease';
+export const ODO_REQUIRED = 'Odometer is required';
 
 // Maintenance
 export const MAINTENANCE_CREATE_SUCCESS = 'Maintenance created successfully';

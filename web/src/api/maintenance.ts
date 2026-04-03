@@ -1,3 +1,8 @@
+import {
+  FAIL_FETCH_MAINTENANCE,
+  FAIL_LOG_MAINTENANCE,
+  FAIL_UPSERT_MAINTENANCE,
+} from '../../../constants/constants';
 import type {
   Maintenance,
   LogMaintenanceResponse,
@@ -19,9 +24,7 @@ export async function fetchMaintenanceByBikeId(
     | ErrorResponse;
 
   if (!response.ok) {
-    throw new Error(
-      'error' in data ? data.error : 'Failed to fetch maintenance',
-    );
+    throw new Error('error' in data ? data.error : FAIL_FETCH_MAINTENANCE);
   }
 
   return (data as ListMaintenanceResponse).maintenance;
@@ -48,7 +51,7 @@ export async function logMaintenanceApi(input: {
     | ErrorResponse;
 
   if (!response.ok) {
-    throw new Error('error' in data ? data.error : 'Failed to log maintenance');
+    throw new Error('error' in data ? data.error : FAIL_LOG_MAINTENANCE);
   }
 
   return data as LogMaintenanceResponse;
@@ -75,9 +78,7 @@ export async function scheduleMaintenanceApi(input: {
     | ErrorResponse;
 
   if (!response.ok) {
-    throw new Error(
-      'error' in data ? data.error : 'Failed to upsert maintenance',
-    );
+    throw new Error('error' in data ? data.error : FAIL_UPSERT_MAINTENANCE);
   }
 
   return data as ScheduleMaintenanceResponse;

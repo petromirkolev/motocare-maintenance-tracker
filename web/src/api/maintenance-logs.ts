@@ -1,3 +1,7 @@
+import {
+  FAIL_CREATE_MAINTENANCE_LOGS,
+  FAIL_FETCH_MAINTENANCE_LOGS,
+} from '../../../constants/constants';
 import type {
   MaintenanceLog,
   CreateMaintenanceLogResponse,
@@ -18,9 +22,7 @@ export async function fetchMaintenanceLogsByBikeId(
     | ErrorResponse;
 
   if (!response.ok) {
-    throw new Error(
-      'error' in data ? data.error : 'Failed to fetch maintenance logs',
-    );
+    throw new Error('error' in data ? data.error : FAIL_FETCH_MAINTENANCE_LOGS);
   }
 
   return (data as ListMaintenanceLogsResponse).logs;
@@ -46,7 +48,7 @@ export async function createMaintenanceLogApi(input: {
 
   if (!response.ok) {
     throw new Error(
-      'error' in data ? data.error : 'Failed to create maintenance log',
+      'error' in data ? data.error : FAIL_CREATE_MAINTENANCE_LOGS,
     );
   }
 

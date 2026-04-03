@@ -1,25 +1,15 @@
 import { Router } from 'express';
-import {
-  INTERNAL_SERVER_ERROR,
-  INVALID_CREDENTIALS_ERROR,
-  INVALID_EMAIL_FORMAT_ERROR,
-  LOGIN_SUCCESS_MESSAGE,
-  MISSING_AUTH_FIELDS_ERROR,
-  PASS_LONG_ERROR,
-  PASS_SHORT_ERROR,
-  REGISTER_SUCCESS_MESSAGE,
-  USER_ALREADY_EXISTS_ERROR,
-} from '../constants/auth';
-import {
-  createUser,
-  findUserByEmail,
-  verifyUserPassword,
-} from '../services/auth-service';
+import { msg } from '../constants/constants';
 import { AuthBody } from '../types/auth-body';
 import { sendAuthError } from '../utils/auth-response';
 import { sendLoginSuccess, sendRegisterSuccess } from '../utils/auth-success';
 import { getValidatedAuthBody } from '../utils/auth-validation';
 import { normalizeEmail, isValidEmail } from '../utils/validation';
+import {
+  createUser,
+  findUserByEmail,
+  verifyUserPassword,
+} from '../services/auth-service';
 
 const authRouter = Router();
 
@@ -27,7 +17,7 @@ authRouter.post('/register', async (req, res) => {
   const validatedBody = getValidatedAuthBody((req.body ?? {}) as AuthBody);
 
   if (!validatedBody) {
-    sendAuthError(res, 400, MISSING_AUTH_FIELDS_ERROR);
+    sendAuthError(res, 400, msg.MISSING_AUTH_FIELDS);
     return;
   }
 
@@ -35,17 +25,17 @@ authRouter.post('/register', async (req, res) => {
   const password = validatedBody.password;
 
   if (!isValidEmail(email)) {
-    sendAuthError(res, 400, INVALID_EMAIL_FORMAT_ERROR);
+    sendAuthError(res, 400, msg.INVALID_EMAIL_FORMAT);
     return;
   }
 
   if (password.length < 8) {
-    sendAuthError(res, 400, PASS_SHORT_ERROR);
+    sendAuthError(res, 400, msg.PASS_SHORT);
     return;
   }
 
   if (password.length > 32) {
-    sendAuthError(res, 400, PASS_LONG_ERROR);
+    sendAuthError(res, 400, msg.PASS_LONG);
     return;
   }
 
@@ -53,15 +43,15 @@ authRouter.post('/register', async (req, res) => {
     const existingUser = await findUserByEmail(email);
 
     if (existingUser) {
-      sendAuthError(res, 409, USER_ALREADY_EXISTS_ERROR);
+      sendAuthError(res, 409, msg.USER_ALREADY_EXISTS);
       return;
     }
 
     await createUser(email, password);
-    sendRegisterSuccess(res, REGISTER_SUCCESS_MESSAGE);
+    sendRegisterSuccess(res, msg.REG_SUCCESS);
   } catch (error) {
-    console.error('Registration failed:', error);
-    sendAuthError(res, 500, INTERNAL_SERVER_ERROR);
+    console.error(msg.REG_FAIL, error);
+    sendAuthError(res, 500, msg.INTERNAL_SERVER_ERROR);
   }
 });
 
@@ -69,7 +59,7 @@ authRouter.post('/login', async (req, res) => {
   const validatedBody = getValidatedAuthBody((req.body ?? {}) as AuthBody);
 
   if (!validatedBody) {
-    sendAuthError(res, 400, MISSING_AUTH_FIELDS_ERROR);
+    sendAuthError(res, 400, msg.MISSING_AUTH_FIELDS);
     return;
   }
 
@@ -80,7 +70,7 @@ authRouter.post('/login', async (req, res) => {
     const user = await findUserByEmail(email);
 
     if (!user) {
-      sendAuthError(res, 401, INVALID_CREDENTIALS_ERROR);
+      sendAuthError(res, 401, msg.INVALID_CREDENTIALS);
       return;
     }
 
@@ -90,17 +80,17 @@ authRouter.post('/login', async (req, res) => {
     );
 
     if (!isPasswordValid) {
-      sendAuthError(res, 401, INVALID_CREDENTIALS_ERROR);
+      sendAuthError(res, 401, msg.INVALID_CREDENTIALS);
       return;
     }
 
-    sendLoginSuccess(res, LOGIN_SUCCESS_MESSAGE, {
+    sendLoginSuccess(res, msg.LOGIN_SUCCESS, {
       id: user.id,
       email: user.email,
     });
   } catch (error) {
-    console.error('Login failed:', error);
-    sendAuthError(res, 500, INTERNAL_SERVER_ERROR);
+    console.error(msg.LOGIN_FAIL, error);
+    sendAuthError(res, 500, msg.INTERNAL_SERVER_ERROR);
   }
 });
 
