@@ -16,6 +16,6 @@ export type CreateBikeResponse = {
   message: string;
 };
 
-export type ErrorResponse = {
+export type BikeErrorResponse = {
   error: string;
 };

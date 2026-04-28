@@ -31,6 +31,6 @@ export type ScheduleMaintenanceResponse = {
   message: string;
 };
 
-export type ErrorResponse = {
+export type MaintenanceErrorResponse = {
   error: string;
 };

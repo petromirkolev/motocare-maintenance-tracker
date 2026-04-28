@@ -1,9 +1,7 @@
 import { dom } from './selectors';
-import { getState } from '../state/state-store';
-import { createBikeCard } from '../ui/create-bike-card';
-import { showScreen } from '../ui/show-screen';
-import { req } from '../utils/dom-helper';
-import { getCurrentUser } from '../state/auth-store';
+import { getState, getCurrentUser } from '../state/index';
+import { createBikeCard, showScreen } from '../ui/index';
+import { request } from '../utils/dom-helper';
 
 export const render = {
   initialScreen(): void {
@@ -19,7 +17,7 @@ export const render = {
   garageScreen(): void {
     showScreen('garage');
 
-    const grid = req(dom.bikeGrid, 'bikeGrid');
+    const grid = request(dom.bikeGrid, 'bikeGrid');
 
     grid.innerHTML = '';
 
@@ -27,9 +25,9 @@ export const render = {
     const bikes = state.bikes;
     const currentUser = getCurrentUser();
 
-    req(dom.userEmail, 'userEmail').textContent =
+    request(dom.userEmail, 'userEmail').textContent =
       `Hello, ${currentUser?.email}`;
-    req(dom.garageCount, 'garageCount').textContent =
+    request(dom.garageCount, 'garageCount').textContent =
       bikes.length > 1 || bikes.length === 0
         ? `${bikes.length} motorcycles`
         : `${bikes.length} motorcycle`;
@@ -37,8 +35,8 @@ export const render = {
     bikes.forEach((bike) => grid.appendChild(createBikeCard(bike)));
 
     bikes.length > 0
-      ? req(dom.garageEmpty, 'garageEmpty').classList.add('is-hidden')
-      : req(dom.garageEmpty, 'garageEmpty').classList.remove('is-hidden');
+      ? request(dom.garageEmpty, 'garageEmpty').classList.add('is-hidden')
+      : request(dom.garageEmpty, 'garageEmpty').classList.remove('is-hidden');
   },
 
   maintenanceScreen() {

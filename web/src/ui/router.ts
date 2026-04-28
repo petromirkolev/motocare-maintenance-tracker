@@ -1,25 +1,31 @@
 import { render } from '../dom/render';
 import { dom } from '../dom/selectors';
-import { req } from '../utils/dom-helper';
-import { bikeStore, readBikeForm } from '../state/bike-store';
-import { createBikeApi, updateBikeApi, deleteBikeApi } from '../api/bikes';
+import { messages } from '../../../constants/messages';
+import { request } from '../utils/dom-helper';
 import { appState } from '../types/state';
-import { initState, resetState } from '../state/state-store';
-import { maintenanceStore } from '../state/maintenance-store';
-import { logMaintenanceApi, scheduleMaintenanceApi } from '../api/maintenance';
-import { loginUser, registerUser } from '../api/auth';
-import { createMaintenanceLogApi } from '../api/maintenance-logs';
 import {
+  createBikeApi,
+  updateBikeApi,
+  deleteBikeApi,
+  logMaintenanceApi,
+  scheduleMaintenanceApi,
+  loginUser,
+  registerUser,
+  createMaintenanceLogApi,
+} from '../api/index';
+import {
+  initState,
+  resetState,
+  maintenanceStore,
+  bikeStore,
+  readBikeForm,
   refreshMaintenance,
   refreshBikes,
   refreshMaintenanceLogs,
-} from '../state/state-store';
-import {
   readLoginForm,
   readRegForm,
   setCurrentUser,
-} from '../state/auth-store';
-import { msg } from '../../../constants/constants';
+} from '../state/index';
 
 type Action =
   | 'auth.login'
@@ -71,14 +77,14 @@ function bindEvents(): void {
           await initState();
 
           loginForm?.reset();
-          render.errorMessage(msg.USER_LOG_OK, 'auth.login');
+          render.errorMessage(messages.AUTH_LOGIN_OK, 'auth.login');
           setTimeout(() => {
             render.garageScreen();
           }, 1000);
         } catch (error) {
           error instanceof Error
             ? render.errorMessage(error.message, action)
-            : render.errorMessage(msg.ERR_INTERNAL, action);
+            : render.errorMessage(messages.SYS_ERR_INTERNAL, action);
         }
         break;
       }
@@ -94,7 +100,7 @@ function bindEvents(): void {
           const regForm = dom.regForm as HTMLFormElement;
           const input = readRegForm(regForm);
           await registerUser(input.email.toLowerCase(), input.password);
-          render.errorMessage(msg.USER_REG_OK, 'auth.register');
+          render.errorMessage(messages.AUTH_REG_OK, 'auth.register');
           regForm?.reset();
           setTimeout(() => {
             render.initialScreen();
@@ -102,7 +108,7 @@ function bindEvents(): void {
         } catch (error) {
           error instanceof Error
             ? render.errorMessage(error.message, action)
-            : render.errorMessage(msg.ERR_INTERNAL, action);
+            : render.errorMessage(messages.SYS_ERR_INTERNAL, action);
         }
         break;
       }
@@ -126,7 +132,7 @@ function bindEvents(): void {
 
       case 'bike.add.submit': {
         const addBikeForm = (dom.addBikeForm as HTMLFormElement) || null;
-        if (!addBikeForm) throw new Error(msg.ADD_FORM_MISS);
+        if (!addBikeForm) throw new Error(messages.UI_ADD_FORM_MISS);
 
         try {
           const input = readBikeForm(addBikeForm);
@@ -144,7 +150,7 @@ function bindEvents(): void {
         } catch (error) {
           error instanceof Error
             ? render.errorMessage(error.message, action)
-            : render.errorMessage(msg.ERR_INTERNAL, action);
+            : render.errorMessage(messages.SYS_ERR_INTERNAL, action);
         }
         break;
       }
@@ -181,7 +187,7 @@ function bindEvents(): void {
         const editId = dom.editBikeId;
 
         if (!editMake || !editYear || !editModel || !editOdo || !editId) {
-          throw new Error(msg.EDIT_INPUTS_MISS);
+          throw new Error(messages.UI_EDIT_INPUTS_MISS);
         }
 
         editId.value = appState.selectedBikeId;
@@ -194,11 +200,11 @@ function bindEvents(): void {
 
       case 'bike.edit.submit': {
         const bikeEditForm = dom.editBikeForm as HTMLFormElement | null;
-        if (!bikeEditForm) throw new Error(msg.EDIT_FORM_MISS);
+        if (!bikeEditForm) throw new Error(messages.UI_EDIT_FORM_MISS);
 
         const idInput = dom.editBikeId as HTMLInputElement | null;
         const id = idInput?.value?.trim();
-        if (!id) throw new Error(msg.BIKE_ID_REQ);
+        if (!id) throw new Error(messages.BIKE_ID_REQ);
 
         try {
           const form = readBikeForm(bikeEditForm);
@@ -218,7 +224,7 @@ function bindEvents(): void {
         } catch (error) {
           error instanceof Error
             ? render.errorMessage(error.message, action)
-            : render.errorMessage(msg.ERR_INTERNAL, action);
+            : render.errorMessage(messages.SYS_ERR_INTERNAL, action);
         }
         break;
       }
@@ -230,11 +236,13 @@ function bindEvents(): void {
           target.closest<HTMLElement>('[data-action]')?.dataset.bikeId || null;
         if (!appState.selectedBikeId) break;
 
-        req(dom.maintenanceEditBtn, 'maintenanceEditBtn').dataset.bikeId =
+        request(dom.maintenanceEditBtn, 'maintenanceEditBtn').dataset.bikeId =
           appState.selectedBikeId;
-        req(dom.maintenanceDeleteBtn, 'maintenanceDeleteBtn').dataset.bikeId =
-          appState.selectedBikeId;
-        req(dom.bikeScreen, 'bikeScreen').dataset.bikeId =
+        request(
+          dom.maintenanceDeleteBtn,
+          'maintenanceDeleteBtn',
+        ).dataset.bikeId = appState.selectedBikeId;
+        request(dom.bikeScreen, 'bikeScreen').dataset.bikeId =
           appState.selectedBikeId;
 
         const selectedBike = bikeStore.getBike(appState.selectedBikeId);
@@ -275,10 +283,10 @@ function bindEvents(): void {
             maintenanceStore.readMaintenanceLogForm(maintenanceForm);
 
           const bike_id = appState.selectedBikeId;
-          if (!bike_id) throw new Error(msg.BIKE_NOT_SEL);
+          if (!bike_id) throw new Error(messages.BIKE_NOT_SEL);
 
           const currentTask = appState.currentMaintenanceItem;
-          if (!currentTask) throw new Error(msg.MAINT_NOT_SEL);
+          if (!currentTask) throw new Error(messages.MAINT_NOT_SEL);
 
           const existingTask = maintenanceStore.getMaintenanceTask(
             bike_id,
@@ -290,9 +298,9 @@ function bindEvents(): void {
             input.date === null ||
             input.date === undefined
           )
-            throw new Error(msg.DATE_REQ);
+            throw new Error(messages.DATE_REQ);
 
-          if (Number(input.odo) < 0) throw new Error(msg.BIKE_ODO_POS);
+          if (Number(input.odo) < 0) throw new Error(messages.BIKE_ODO_POS);
 
           await logMaintenanceApi({
             bike_id,
@@ -320,7 +328,7 @@ function bindEvents(): void {
         } catch (error) {
           error instanceof Error
             ? render.errorMessage(error.message, action)
-            : render.errorMessage(msg.ERR_INTERNAL, action);
+            : render.errorMessage(messages.SYS_ERR_INTERNAL, action);
         }
         break;
       }
@@ -344,15 +352,16 @@ function bindEvents(): void {
             maintenanceStore.readMaintenanceScheduleForm(scheduleForm);
 
           if (Number(input.interval_days) <= 0)
-            throw new Error(msg.MAINT_DAYS_POS);
+            throw new Error(messages.MAINT_DAYS_POS);
 
-          if (Number(input.interval_km) <= 0) throw new Error(msg.MAINT_KM_POS);
+          if (Number(input.interval_km) <= 0)
+            throw new Error(messages.MAINT_KM_POS);
 
           const bike_id = appState.selectedBikeId;
-          if (!bike_id) throw new Error(msg.BIKE_NOT_SEL);
+          if (!bike_id) throw new Error(messages.BIKE_NOT_SEL);
 
           const currentTask = appState.currentMaintenanceItem;
-          if (!currentTask) throw new Error(msg.MAINT_NOT_SEL);
+          if (!currentTask) throw new Error(messages.MAINT_NOT_SEL);
 
           await scheduleMaintenanceApi({
             bike_id,
@@ -374,7 +383,7 @@ function bindEvents(): void {
         } catch (error) {
           error instanceof Error
             ? render.errorMessage(error.message, action)
-            : render.errorMessage(msg.ERR_INTERNAL, action);
+            : render.errorMessage(messages.SYS_ERR_INTERNAL, action);
         }
         break;
       }

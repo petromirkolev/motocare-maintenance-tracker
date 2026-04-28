@@ -1,5 +1,4 @@
-import type { Maintenance } from '../types/maintenance';
-import type { MaintenanceLog } from '../types/maintenance-log';
+import type { Maintenance, MaintenanceLog } from '../types/index';
 
 type ServiceStatus = {
   isOverdue: boolean;

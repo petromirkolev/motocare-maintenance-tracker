@@ -1,7 +1,7 @@
 import { APIRequestContext, APIResponse, expect } from '@playwright/test';
 import { ValidBikeInput, BikeResponse } from '../types/bike';
 import { ValidUserInput } from '../types/auth';
-import { API_URL } from '../../constants/constants';
+import { API_BASE_URL } from '../../web/src/api/base';
 import {
   BikeUpdateInput,
   MaintenanceLogInput,
@@ -13,7 +13,7 @@ export const api = {
     request: APIRequestContext,
     input: ValidUserInput,
   ): Promise<APIResponse> {
-    const response = await request.post(`${API_URL}/auth/register`, {
+    const response = await request.post(`${API_BASE_URL}/auth/register`, {
       data: input,
     });
 
@@ -24,7 +24,7 @@ export const api = {
     request: APIRequestContext,
     input: ValidUserInput,
   ): Promise<APIResponse> {
-    const response = await request.post(`${API_URL}/auth/login`, {
+    const response = await request.post(`${API_BASE_URL}/auth/login`, {
       data: input,
     });
 
@@ -36,7 +36,7 @@ export const api = {
     user_id: string,
     overrides: Partial<ValidBikeInput> = {},
   ): Promise<APIResponse> {
-    const response = await request.post(`${API_URL}/bikes`, {
+    const response = await request.post(`${API_BASE_URL}/bikes`, {
       data: {
         user_id,
         ...overrides,
@@ -52,13 +52,16 @@ export const api = {
     bike_id: string,
     overrides: Partial<BikeUpdateInput>,
   ): Promise<APIResponse> {
-    const updateResponse = await request.put(`${API_URL}/bikes/${bike_id}`, {
-      data: {
-        id: bike_id,
-        user_id,
-        ...overrides,
+    const updateResponse = await request.put(
+      `${API_BASE_URL}/bikes/${bike_id}`,
+      {
+        data: {
+          id: bike_id,
+          user_id,
+          ...overrides,
+        },
       },
-    });
+    );
     return updateResponse;
   },
 
@@ -68,7 +71,7 @@ export const api = {
     bike_id: string,
   ): Promise<APIResponse> {
     const deleteResponse = await request.delete(
-      `${API_URL}/bikes/${bike_id}?user_id=${user_id}`,
+      `${API_BASE_URL}/bikes/${bike_id}?user_id=${user_id}`,
     );
 
     return deleteResponse;
@@ -78,7 +81,9 @@ export const api = {
     request: APIRequestContext,
     user_id: string,
   ): Promise<BikeResponse> {
-    const response = await request.get(`${API_URL}/bikes?user_id=${user_id}`);
+    const response = await request.get(
+      `${API_BASE_URL}/bikes?user_id=${user_id}`,
+    );
 
     expect(response.status()).toBe(200);
 
@@ -91,7 +96,7 @@ export const api = {
     bike_id: string,
     overrides: Partial<MaintenanceLogInput>,
   ) {
-    const response = await request.post(`${API_URL}/maintenance/log`, {
+    const response = await request.post(`${API_BASE_URL}/maintenance/log`, {
       data: {
         bike_id,
         ...overrides,
@@ -106,14 +111,17 @@ export const api = {
     bike_id: string,
     overrides: Partial<MaintenanceScheduleInput>,
   ) {
-    const response = await request.post(`${API_URL}/maintenance/schedule`, {
-      data: {
-        bike_id,
-        name: overrides.name,
-        interval_km: overrides.interval_km,
-        interval_days: overrides.interval_days,
+    const response = await request.post(
+      `${API_BASE_URL}/maintenance/schedule`,
+      {
+        data: {
+          bike_id,
+          name: overrides.name,
+          interval_km: overrides.interval_km,
+          interval_days: overrides.interval_days,
+        },
       },
-    });
+    );
 
     return response;
   },
@@ -123,7 +131,7 @@ export const api = {
     bike_id: string,
   ): Promise<APIResponse> {
     const response = await request.get(
-      `${API_URL}/maintenance?bike_id=${bike_id}`,
+      `${API_BASE_URL}/maintenance?bike_id=${bike_id}`,
     );
 
     return response;

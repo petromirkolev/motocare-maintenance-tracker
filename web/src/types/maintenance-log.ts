@@ -17,6 +17,6 @@ export type CreateMaintenanceLogResponse = {
   message: string;
 };
 
-export type ErrorResponse = {
+export type MaintenanceLogErrorResponse = {
   error: string;
 };

@@ -1,11 +1,11 @@
-import { msg } from '../../../constants/constants';
+import { messages } from '../../../constants/messages';
 import { API_BASE_URL } from './base';
 import type {
   MaintenanceLog,
   CreateMaintenanceLogResponse,
   ListMaintenanceLogsResponse,
-  ErrorResponse,
-} from '../types/maintenance-log';
+  MaintenanceLogErrorResponse,
+} from '../types/index';
 
 export async function fetchMaintenanceLogsByBikeId(
   bike_id: string,
@@ -16,10 +16,10 @@ export async function fetchMaintenanceLogsByBikeId(
 
   const data = (await response.json()) as
     | ListMaintenanceLogsResponse
-    | ErrorResponse;
+    | MaintenanceLogErrorResponse;
 
   if (!response.ok) {
-    throw new Error('error' in data ? data.error : msg.MAINT_LOGS_ERR);
+    throw new Error('error' in data ? data.error : messages.MAINT_LOGS_ERR);
   }
 
   return (data as ListMaintenanceLogsResponse).logs;
@@ -41,10 +41,12 @@ export async function createMaintenanceLogApi(input: {
 
   const data = (await response.json()) as
     | CreateMaintenanceLogResponse
-    | ErrorResponse;
+    | MaintenanceLogErrorResponse;
 
   if (!response.ok) {
-    throw new Error('error' in data ? data.error : msg.MAINT_LOG_CREATE_ERR);
+    throw new Error(
+      'error' in data ? data.error : messages.MAINT_LOG_CREATE_ERR,
+    );
   }
 
   return data as CreateMaintenanceLogResponse;

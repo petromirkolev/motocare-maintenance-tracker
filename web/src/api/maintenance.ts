@@ -1,12 +1,12 @@
-import { msg } from '../../../constants/constants';
+import { messages } from '../../../constants/messages';
 import { API_BASE_URL } from './base';
 import type {
   Maintenance,
   LogMaintenanceResponse,
   ScheduleMaintenanceResponse,
   ListMaintenanceResponse,
-  ErrorResponse,
-} from '../types/maintenance';
+  MaintenanceErrorResponse,
+} from '../types/index';
 
 export async function fetchMaintenanceByBikeId(
   bike_id: string,
@@ -17,10 +17,10 @@ export async function fetchMaintenanceByBikeId(
 
   const data = (await response.json()) as
     | ListMaintenanceResponse
-    | ErrorResponse;
+    | MaintenanceErrorResponse;
 
   if (!response.ok) {
-    throw new Error('error' in data ? data.error : msg.MAINT_FETCH_ERR);
+    throw new Error('error' in data ? data.error : messages.MAINT_FETCH_ERR);
   }
 
   return (data as ListMaintenanceResponse).maintenance;
@@ -44,10 +44,12 @@ export async function logMaintenanceApi(input: {
 
   const data = (await response.json()) as
     | LogMaintenanceResponse
-    | ErrorResponse;
+    | MaintenanceErrorResponse;
 
   if (!response.ok) {
-    throw new Error('error' in data ? data.error : msg.MAINT_LOG_CREATE_ERR);
+    throw new Error(
+      'error' in data ? data.error : messages.MAINT_LOG_CREATE_ERR,
+    );
   }
 
   return data as LogMaintenanceResponse;
@@ -71,10 +73,10 @@ export async function scheduleMaintenanceApi(input: {
 
   const data = (await response.json()) as
     | ScheduleMaintenanceResponse
-    | ErrorResponse;
+    | MaintenanceErrorResponse;
 
   if (!response.ok) {
-    throw new Error('error' in data ? data.error : msg.MAINT_UPSERT_ERR);
+    throw new Error('error' in data ? data.error : messages.MAINT_UPDATE_FAIL);
   }
 
   return data as ScheduleMaintenanceResponse;

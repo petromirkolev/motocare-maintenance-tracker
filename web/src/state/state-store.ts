@@ -1,7 +1,9 @@
 import { fetchBikes } from '../api/bikes';
-import { fetchMaintenanceByBikeId } from '../api/maintenance';
-import { fetchMaintenanceLogsByBikeId } from '../api/maintenance-logs';
-import type { StoreState } from '../types/state';
+import type { StoreState } from '../types/index';
+import {
+  fetchMaintenanceByBikeId,
+  fetchMaintenanceLogsByBikeId,
+} from '../api/index';
 
 const listeners = new Set<() => void>();
 

@@ -1,6 +1,6 @@
 import type { Maintenance } from '../types/maintenance';
 
-export function req<T extends HTMLElement>(el: T | null, name: string): T {
+export function request<T extends HTMLElement>(el: T | null, name: string): T {
   if (!el) throw new Error(`Missing DOM element: ${name}`);
   return el;
 }

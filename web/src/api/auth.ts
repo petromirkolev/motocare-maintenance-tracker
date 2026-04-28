@@ -1,10 +1,10 @@
 import { API_BASE_URL } from './base';
-import { msg } from '../../../constants/constants';
+import { messages } from '../../../constants/messages';
 import type {
   RegisterResponse,
-  ErrorResponse,
+  AuthErrorResponse,
   LoginResponse,
-} from '../types/auth';
+} from '../types/index';
 
 export async function registerUser(
   email: string,
@@ -18,10 +18,10 @@ export async function registerUser(
     body: JSON.stringify({ email, password }),
   });
 
-  const data = (await response.json()) as RegisterResponse | ErrorResponse;
+  const data = (await response.json()) as RegisterResponse | AuthErrorResponse;
 
   if (!response.ok) {
-    throw new Error('error' in data ? data.error : msg.USER_REG_ERR);
+    throw new Error('error' in data ? data.error : messages.AUTH_REG_FAIL);
   }
 
   return data as RegisterResponse;
@@ -39,10 +39,10 @@ export async function loginUser(
     body: JSON.stringify({ email, password }),
   });
 
-  const data = (await response.json()) as LoginResponse | ErrorResponse;
+  const data = (await response.json()) as LoginResponse | AuthErrorResponse;
 
   if (!response.ok) {
-    throw new Error('error' in data ? data.error : msg.USER_LOG_ERR);
+    throw new Error('error' in data ? data.error : messages.AUTH_LOGIN_FAIL);
   }
 
   return data as LoginResponse;

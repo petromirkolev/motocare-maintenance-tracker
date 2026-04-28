@@ -1,7 +1,6 @@
 import { bindEvents } from './ui/router';
 import { render } from './dom/render';
-import { getCurrentUser } from './state/auth-store';
-import { initState } from './state/state-store';
+import { getCurrentUser, initState } from './state/index';
 
 await initState();
 

@@ -17,6 +17,6 @@ export type RegisterResponse = {
   message: string;
 };
 
-export type ErrorResponse = {
+export type AuthErrorResponse = {
   error: string;
 };
